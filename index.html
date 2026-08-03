@@ -415,8 +415,8 @@ if(!book){
     console.log("Trying OpenLibrary search...");
 
     let searchResponse = await fetch(
-        "https://openlibrary.org/search.json?q=" + isbn
-    );
+    "https://openlibrary.org/search.json?isbn=" + isbn
+);
 
     let searchData = await searchResponse.json();
 
