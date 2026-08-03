@@ -438,68 +438,13 @@ lookupISBNNumber(isbn);
 
 }
 
-document.getElementById("scanner").innerHTML = `
-<input id="isbnInput" class="search" 
-placeholder="Enter ISBN number">
-
-<button onclick="lookupISBN()">Look Up Book</button>
-`;
-
-}
-
-
-async function lookupISBN(){
-
-let isbn = document.getElementById("isbnInput").value;
-
-let result = document.getElementById("scanResult");
-
-result.innerHTML = "Searching...";
-
-try {
-
-let response = await fetch(
-"https://openlibrary.org/isbn/" + isbn + ".json"
-);
-
-if(!response.ok){
-throw new Error();
-}
-
-let data = await response.json();
-
-let title = data.title || "Unknown title";
-
-result.innerHTML = `
-<b>${title}</b>
-<br>
-ISBN: ${isbn}
-<br><br>
-<button onclick="addScannedBook('${title}')">
-Add to Library
-</button>
-`;
-
-}
-
-catch {
-
-result.innerHTML =
-"Book not found. Try another ISBN.";
-
-}
-
-}
-
-
 function addScannedBook(title){
 
-alert(title+" added!");
+alert(title + " added!");
 
 }
 
-alert(
-title + " added! (We will connect this to your 
 </script>
+
 </body>
 </html>
