@@ -398,9 +398,13 @@ async function lookupISBNNumber(isbn){
 
     try {
 
-        let response = await fetch(
-            "https://openlibrary.org/isbn/" + isbn + ".json"
-        );
+      console.log("LOOKING UP ISBN:", isbn);
+
+let response = await fetch(
+    "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data"
+);
+
+console.log("RESPONSE STATUS:", response.status);
 
         if(!response.ok){
             throw new Error("ISBN not found");
