@@ -315,7 +315,9 @@ document
 
 render();
 
-
+function cleanISBN(code){
+    return code.replace(/\D/g,'');
+}
 let codeReader;
 async function startScanner(){
 
@@ -424,21 +426,38 @@ console.log("OpenLibrary response:", data);
         let author =
         "Unknown author";
 
+if(data.authors){
 
-       if(data.authors){
+    if(data.authors[0].key){
 
-    let authorKey = data.authors[0].key;
+        let authorKey = data.authors[0].key;
 
-    let authorResponse = await fetch(
-        "https://openlibrary.org" + authorKey + ".json"
-    );
+        let authorResponse = await fetch(
+            "https://openlibrary.org" + authorKey + ".json"
+        );
 
-    let authorData = await authorResponse.json();
+        let authorData = await authorResponse.json();
 
-    author = authorData.name || author;
+        author = authorData.name || author;
 
+    } else if(data.authors[0].name){
+
+        author = data.authors[0].name;
+
+    }
 }
+  
 
+        let authorData = await authorResponse.json();
+
+        author = authorData.name || author;
+
+    } else if(data.authors[0].name){
+
+        author = data.authors[0].name;
+
+    }
+} 
 
         result.innerHTML =
         `
