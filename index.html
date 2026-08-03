@@ -69,7 +69,7 @@ label {
 <div id="scanResult" class="book"></div>
 
 <div id="books"></div>
-
+<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
 <script>
 
 const books = [["The Odyssey","Homer"],
@@ -268,9 +268,92 @@ document
 .getElementById("search")
 .addEventListener("input",render);
 
-
 render();
+
 function startScanner(){
+
+document.getElementById("scanner").innerHTML = `
+<div id="camera" style="width:100%; max-width:400px;"></div>
+`;
+
+Quagga.init({
+inputStream:{
+name:"Live",
+type:"LiveStream",
+target:document.querySelector("#camera"),
+constraints:{
+facingMode:"environment"
+}
+},
+decoder:{
+readers:["ean_reader"]
+}
+}, function(err){
+
+if(err){
+document.getElementById("scanner").innerHTML =
+"Camera error: " + err;
+return;
+}
+
+Quagga.start();
+
+});
+
+
+Quagga.onDetected(function(data){
+
+let isbn = data.codeResult.code;
+
+Quagga.stop();
+
+lookupISBNNumber(isbn);
+
+});
+
+}
+
+
+async function lookupISBNNumber(isbn){
+
+let result=document.getElementById("scanResult");
+
+result.innerHTML="Looking up ISBN "+isbn+"...";
+
+try{
+
+let response=await fetch(
+"https://openlibrary.org/isbn/"+isbn+".json"
+);
+
+let data=await response.json();
+
+result.innerHTML=`
+<b>${data.title || "Unknown title"}</b>
+<br>
+ISBN: ${isbn}
+<br><br>
+<button onclick="addScannedBook('${data.title}')">
+Add to Black Spine Collection
+</button>
+`;
+
+}
+
+catch{
+
+result.innerHTML="Book not found.";
+
+}
+
+}
+
+
+function addScannedBook(title){
+
+alert(title+" added!");
+
+}
 
 document.getElementById("scanner").innerHTML = `
 <div id="camera"
@@ -416,7 +499,6 @@ title + " added! (We will connect this to your checklist next.)"
 );
 
 }
-<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
 
 <script>
 
