@@ -1,55 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Penguin Library</title>
 
 <style>
-body {
-  font-family: Georgia, serif;
-  background: #f7f3ea;
-  color: #222;
-  margin: 20px;
+
+body{
+    font-family:Georgia,serif;
+    background:#f7f3ea;
+    margin:20px;
+    color:#222;
 }
 
-h1 {
-  text-align:center;
+h1{
+    text-align:center;
 }
 
-.search {
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border-radius:8px;
-  border:1px solid #999;
+.search{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    border-radius:8px;
+    border:1px solid #999;
+    margin-bottom:12px;
+    box-sizing:border-box;
 }
 
-.stats {
-  margin:15px 0;
-  font-weight:bold;
+button{
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    background:#333;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
 }
 
-.book {
-  background:white;
-  padding:12px;
-  margin:10px 0;
-  border-radius:8px;
-  border:1px solid #ddd;
+button:hover{
+    background:#555;
 }
 
-.author {
-  color:#666;
+.stats{
+    margin:15px 0;
+    font-weight:bold;
 }
 
-label {
-  display:block;
-  margin-top:8px;
+.book{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:12px;
+    margin-bottom:12px;
 }
 
-.small {
-  font-size:14px;
-  color:#777;
+.author{
+    color:#666;
+    margin-bottom:8px;
 }
+
+label{
+    display:block;
+    margin-top:6px;
+}
+
+video{
+    width:100%;
+    max-width:400px;
+    border-radius:8px;
+    margin-top:15px;
+}
+
+#scanResult{
+    margin-top:15px;
+}
+
 </style>
 
 </head>
@@ -58,21 +85,30 @@ label {
 
 <h1>📚 Penguin Library</h1>
 
-<div class="stats" id="stats"></div>
+<div id="stats" class="stats"></div>
 
-<input class="search" id="search" placeholder="Search title or author">
+<input
+id="search"
+class="search"
+placeholder="Search title or author">
 
 <button onclick="startScanner()">📷 Scan Book</button>
 
-<div id="scanner" style="margin-top:15px;"></div>
+<div id="scanner"></div>
 
-<div id="scanResult" class="book"></div>
+<div id="scanResult"></div>
 
 <div id="books"></div>
+
 <script src="https://unpkg.com/@zxing/browser@latest"></script>
+
 <script>
 
-let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [["The Odyssey","Homer"],
+let books = JSON.parse(
+localStorage.getItem("penguinLibraryBooks")
+) || [
+
+["The Odyssey","Homer"],
 ["The Iliad","Homer"],
 ["The Aeneid","Virgil"],
 ["The Divine Comedy","Dante Alighieri"],
@@ -122,7 +158,8 @@ let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [["The Od
 ["Les Misérables","Victor Hugo"],
 ["The Hunchback of Notre-Dame","Victor Hugo"],
 ["The Count of Monte Cristo","Alexandre Dumas"],
-["The Three Musketeers","Alexandre Dumas"],
+["The Three Musketeers","Alexandre Dumas"]
+  ,
 ["The Stranger","Albert Camus"],
 ["The Plague","Albert Camus"],
 ["Nausea","Jean-Paul Sartre"],
@@ -148,7 +185,6 @@ let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [["The Od
 ["The Trial","Franz Kafka"],
 ["The Castle","Franz Kafka"],
 ["The Little Prince","Antoine de Saint-Exupéry"],
-["The Plague","Daniel Defoe"],
 ["Robinson Crusoe","Daniel Defoe"],
 ["Gulliver's Travels","Jonathan Swift"],
 ["The Importance of Being Earnest","Oscar Wilde"],
@@ -172,95 +208,93 @@ let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [["The Od
 ["One Hundred Years of Solitude","Gabriel García Márquez"],
 ["Love in the Time of Cholera","Gabriel García Márquez"],
 ["The Master and Margarita","Mikhail Bulgakov"]
+
 ];
-  let saved = JSON.parse(localStorage.getItem("penguinLibrary") || "{}");
 
-function render() {
+let saved = JSON.parse(
+localStorage.getItem("penguinLibrary") || "{}"
+);
 
-  let search = document.getElementById("search").value.toLowerCase();
-  let area = document.getElementById("books");
+function render(){
 
-  area.innerHTML = "";
+    let search =
+        document.getElementById("search").value.toLowerCase();
 
-  let owned = 0;
-  let read = 0;
-  let wishlist = 0;
+    let area =
+        document.getElementById("books");
 
-  books.forEach((book,index)=>{
+    area.innerHTML="";
 
-    if(saved[index]?.owned) owned++;
-    if(saved[index]?.read) read++;
-    if(saved[index]?.wishlist) wishlist++;
+    let owned=0;
+    let read=0;
+    let wishlist=0;
 
-    let text = (book[0] + " " + book[1]).toLowerCase();
+    books.forEach((book,index)=>{
 
-    if(text.includes(search)) {
+        if(saved[index]?.owned) owned++;
+        if(saved[index]?.read) read++;
+        if(saved[index]?.wishlist) wishlist++;
 
-      area.innerHTML += `
+        let text =
+            (book[0]+" "+book[1]).toLowerCase();
 
-      <div class="book">
+        if(text.includes(search)){
 
-      <b>${index + 1}. ${book[0]}</b>
+            area.innerHTML+=`
 
-      <div class="author">${book[1]}</div>
+<div class="book">
 
-      <div class="checks">
+<b>${index+1}. ${book[0]}</b>
 
-      <label>
-      <input type="checkbox"
-      ${saved[index]?.owned ? "checked":""}
-      onchange="updateBook(${index},'owned')">
-      I own this
-      </label>
+<div class="author">${book[1]}</div>
 
-      <label>
-      <input type="checkbox"
-      ${saved[index]?.read ? "checked":""}
-      onchange="updateBook(${index},'read')">
-      I have read this
-      </label>
+<label>
+<input type="checkbox"
+${saved[index]?.owned?"checked":""}
+onchange="updateBook(${index},'owned')">
+I own this
+</label>
 
-      <label>
-      <input type="checkbox"
-      ${saved[index]?.wishlist ? "checked":""}
-      onchange="updateBook(${index},'wishlist')">
-      Wishlist
-      </label>
+<label>
+<input type="checkbox"
+${saved[index]?.read?"checked":""}
+onchange="updateBook(${index},'read')">
+I have read this
+</label>
 
-      </div>
+<label>
+<input type="checkbox"
+${saved[index]?.wishlist?"checked":""}
+onchange="updateBook(${index},'wishlist')">
+Wishlist
+</label>
 
-      </div>
+</div>
 
-      `;
-    }
+`;
 
-  });
+        }
 
+    });
 
-  document.getElementById("stats").innerHTML =
-  "Owned: " + owned +
-  " | Read: " + read +
-  " | Wishlist: " + wishlist +
-  " | Total: " + books.length;
+    document.getElementById("stats").innerHTML =
+        `Owned: ${owned} | Read: ${read} | Wishlist: ${wishlist} | Total: ${books.length}`;
 
 }
+  function updateBook(index,type){
 
+    if(!saved[index]){
+        saved[index]={};
+    }
 
-function updateBook(index,type){
+    saved[index][type]=!saved[index][type];
 
-  if(!saved[index]){
-    saved[index]={};
-  }
+    localStorage.setItem(
+        "penguinLibrary",
+        JSON.stringify(saved)
+    );
 
-  saved[index][type] = !saved[index][type];
-
-  localStorage.setItem(
-    "penguinLibrary",
-    JSON.stringify(saved)
-  );
-
-  render();
-
+    render();
 }
 
 
@@ -268,103 +302,155 @@ document
 .getElementById("search")
 .addEventListener("input",render);
 
+
 render();
 
-async function lookupISBNNumber(isbn){
-
-lookupISBNNumber(isbn);
-
-});
-
-}
 
 let codeReader;
 
-async function startScanner() {
+
+async function startScanner(){
 
     document.getElementById("scanner").innerHTML =
-        '<video id="camera" style="width:100%;max-width:400px;"></video>';
+    `
+    <video id="camera"></video>
+    `;
 
     codeReader = new ZXing.BrowserMultiFormatReader();
 
-    try {
+    try{
 
-        const result = await codeReader.decodeOnceFromVideoDevice(
+        const result =
+        await codeReader.decodeOnceFromVideoDevice(
             undefined,
             "camera"
         );
 
-        lookupISBNNumber(result.text);
-
         codeReader.reset();
 
-    } catch (err) {
+        lookupISBNNumber(result.text);
+
+    }
+
+    catch(error){
 
         document.getElementById("scanResult").innerHTML =
-            "No barcode detected.";
+        "No barcode detected.";
 
     }
 
 }
 
-let response=await fetch(
-"https://openlibrary.org/isbn/"+isbn+".json"
-);
 
-let data=await response.json();
 
-let title=data.title || "Unknown title";
-let author="Unknown author";
+async function lookupISBNNumber(isbn){
 
-if(data.authors){
-author=data.authors[0].name || author;
+    let result =
+    document.getElementById("scanResult");
+
+    result.innerHTML =
+    "Looking up ISBN " + isbn + "...";
+
+
+    try{
+
+        let response =
+        await fetch(
+        "https://openlibrary.org/isbn/"
+        + isbn +
+        ".json"
+        );
+
+
+        let data =
+        await response.json();
+
+
+        let title =
+        data.title || "Unknown title";
+
+
+        let author =
+        "Unknown author";
+
+
+        if(data.authors){
+
+            author =
+            data.authors[0].name || author;
+
+        }
+
+
+        result.innerHTML =
+        `
+
+        <div class="book">
+
+        <b>${title}</b>
+
+        <br>
+
+        ${author}
+
+        <br>
+
+        ISBN: ${isbn}
+
+        <br><br>
+
+        <button onclick="addScannedBook(
+        '${title.replace(/'/g,"\\'")}',
+        '${author.replace(/'/g,"\\'")}'
+        )">
+
+        Add to Library
+
+        </button>
+
+        </div>
+
+        `;
+
+
+    }
+
+    catch{
+
+        result.innerHTML =
+        "Book not found.";
+
+    }
+
 }
 
-
-result.innerHTML=`
-
-<b>${title}</b>
-<br>
-${author}
-<br>
-ISBN: ${isbn}
-
-<br><br>
-
-<button onclick="addScannedBook('${title.replace(/'/g,"\\'")}','${author.replace(/'/g,"\\'")}')">
-Add to Library
-</button>
-
-`;
-
-}
-
-catch{
-
-result.innerHTML="Book not found.";
-
-}
-
-}
 
 
 
 function addScannedBook(title,author){
 
-books.push([title,author]);
 
-localStorage.setItem(
-"penguinLibraryBooks",
-JSON.stringify(books)
-);
+    books.push(
+        [title,author]
+    );
 
-alert(title+" added!");
 
-render();
+    localStorage.setItem(
+        "penguinLibraryBooks",
+        JSON.stringify(books)
+    );
+
+
+    alert(title+" added!");
+
+
+    render();
 
 }
+
 
 </script>
 
 </body>
+
 </html>
