@@ -270,45 +270,7 @@ document
 
 render();
 
-function startScanner(){
-
-document.getElementById("scanner").innerHTML = `
-<div id="camera" style="width:100%; max-width:400px;"></div>
-`;
-
-Quagga.init({
-inputStream:{
-name:"Live",
-type:"LiveStream",
-target:document.querySelector("#camera"),
-constraints:{
-facingMode:"environment"
-}
-},
-decoder:{
-readers:[
-"ean_reader",
-"ean_8_reader"
-]
-}
-},function(err){
-
-if(err){
-document.getElementById("scanner").innerHTML =
-"Camera error: " + err;
-return;
-}
-
-Quagga.start();
-
-});
-
-
-Quagga.onDetected(function(data){
-
-let isbn=data.codeResult.code;
-
-Quagga.stop();
+async function lookupISBNNumber(isbn){
 
 lookupISBNNumber(isbn);
 
