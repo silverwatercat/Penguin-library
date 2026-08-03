@@ -329,14 +329,12 @@ async function startScanner(){
 
         const codeReader = new ZXing.BrowserMultiFormatReader();
 
-        await codeReader.decodeFromConstraints(
-            {
-                video: {
-                    facingMode: { ideal: "environment" },
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
-                }
-            },
+       await codeReader.decodeFromConstraints(
+    {
+        video: {
+            facingMode: "environment"
+        }
+    },
             video,
             (result, error) => {
 
