@@ -313,34 +313,30 @@ async function startScanner(){
     '<video id="camera" autoplay playsinline></video>';
 
     document.getElementById("scanResult").innerHTML =
-    "Loading barcode scanner...";
+    "Starting scanner...";
 
     const video = document.getElementById("camera");
 
     try {
 
-        codeReader = new ZXing.BrowserMultiFormatReader();
+        const devices = await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
 
-        const devices = await codeReader.listVideoInputDevices();
+        let backCamera = devices.find(device =>
+            device.label.toLowerCase().includes("back") ||
+            device.label.toLowerCase().includes("rear") ||
+            device.label.toLowerCase().includes("environment")
+        );
 
-        document.getElementById("scanResult").innerHTML =
-        "Cameras found: " + devices.length;
+        let cameraId = backCamera ? backCamera.deviceId : devices[devices.length - 1].deviceId;
 
-
-        if(devices.length === 0){
-            return;
-        }
-
+        const codeReader = new ZXing.BrowserMultiFormatReader();
 
         codeReader.decodeFromVideoDevice(
-            devices[0].deviceId,
+            cameraId,
             video,
-            (result, error)=>{
+            (result, error) => {
 
                 if(result){
-
-                    document.getElementById("scanResult").innerHTML =
-                    "FOUND: " + result.text;
 
                     codeReader.reset();
 
@@ -351,12 +347,15 @@ async function startScanner(){
             }
         );
 
+        document.getElementById("scanResult").innerHTML =
+        "Point rear camera at barcode.";
+
     }
 
     catch(error){
 
         document.getElementById("scanResult").innerHTML =
-        "ERROR: " + error.message;
+        "Camera error: " + error.message;
 
     }
 
