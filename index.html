@@ -347,9 +347,11 @@ height: { ideal: 1080 }
                     document.getElementById("scanResult").innerHTML =
                     "ISBN found: " + result.text;
 
-                    codeReader.reset();
+                   let isbn = cleanISBN(result.text);
 
-                    lookupISBNNumber(result.text.replace(/\D/g,''));
+stopScanner();
+
+lookupISBNNumber(isbn);
                 }
 
             }
@@ -407,6 +409,9 @@ if(!response.ok){
 }
 
 let data = await response.json();
+        if(data["ISBN:" + isbn]){
+    data = data["ISBN:" + isbn];
+}
 console.log("ISBN scanned:", isbn);
 console.log("OpenLibrary response:", data);
 
