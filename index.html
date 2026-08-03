@@ -13,38 +13,42 @@ body {
 }
 
 h1 {
-  text-align: center;
+  text-align:center;
 }
 
 .search {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #999;
-  box-sizing: border-box;
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #999;
 }
 
 .stats {
-  margin: 15px 0;
-  font-weight: bold;
+  margin:15px 0;
+  font-weight:bold;
 }
 
 .book {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
+  background:white;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ddd;
 }
 
 .author {
-  color: #555;
+  color:#666;
 }
 
 label {
-  display: block;
-  margin-top: 10px;
+  display:block;
+  margin-top:8px;
+}
+
+.small {
+  font-size:14px;
+  color:#777;
 }
 </style>
 
@@ -60,102 +64,202 @@ label {
 
 <div id="books"></div>
 
-
 <script>
 
-const books = [
+const books = ["The Odyssey","Homer"],
+["The Iliad","Homer"],
+["The Aeneid","Virgil"],
+["The Divine Comedy","Dante Alighieri"],
+["The Decameron","Giovanni Boccaccio"],
+["The Canterbury Tales","Geoffrey Chaucer"],
+["Don Quixote","Miguel de Cervantes"],
 ["Pride and Prejudice","Jane Austen"],
+["Sense and Sensibility","Jane Austen"],
+["Emma","Jane Austen"],
 ["Jane Eyre","Charlotte Brontë"],
 ["Wuthering Heights","Emily Brontë"],
-["Frankenstein","Mary Shelley"],
-["Dracula","Bram Stoker"],
+["Great Expectations","Charles Dickens"],
+["Bleak House","Charles Dickens"],
+["David Copperfield","Charles Dickens"],
+["A Tale of Two Cities","Charles Dickens"],
+["Oliver Twist","Charles Dickens"],
+["Middlemarch","George Eliot"],
 ["The Picture of Dorian Gray","Oscar Wilde"],
+["Dracula","Bram Stoker"],
+["Frankenstein","Mary Shelley"],
+["The Time Machine","H.G. Wells"],
+["The War of the Worlds","H.G. Wells"],
+["The Strange Case of Dr Jekyll and Mr Hyde","Robert Louis Stevenson"],
+["Treasure Island","Robert Louis Stevenson"],
+["The Adventures of Sherlock Holmes","Arthur Conan Doyle"],
 ["The Great Gatsby","F. Scott Fitzgerald"],
+["Tender Is the Night","F. Scott Fitzgerald"],
+["The Grapes of Wrath","John Steinbeck"],
+["East of Eden","John Steinbeck"],
+["Of Mice and Men","John Steinbeck"],
 ["1984","George Orwell"],
 ["Animal Farm","George Orwell"],
-["The Odyssey","Homer"],
-["The Iliad","Homer"],
+["Brave New World","Aldous Huxley"],
+["The Sun Also Rises","Ernest Hemingway"],
+["A Farewell to Arms","Ernest Hemingway"],
+["The Old Man and the Sea","Ernest Hemingway"],
 ["Crime and Punishment","Fyodor Dostoevsky"],
 ["The Brothers Karamazov","Fyodor Dostoevsky"],
+["Notes from Underground","Fyodor Dostoevsky"],
+["The Idiot","Fyodor Dostoevsky"],
 ["Anna Karenina","Leo Tolstoy"],
 ["War and Peace","Leo Tolstoy"],
-["Don Quixote","Miguel de Cervantes"],
+["The Death of Ivan Ilyich","Leo Tolstoy"],
+["The Master and Margarita","Mikhail Bulgakov"],
+["Fathers and Sons","Ivan Turgenev"],
+["Madame Bovary","Gustave Flaubert"],
 ["Les Misérables","Victor Hugo"],
+["The Hunchback of Notre-Dame","Victor Hugo"],
 ["The Count of Monte Cristo","Alexandre Dumas"],
-["Treasure Island","Robert Louis Stevenson"],
-["Meditations","Marcus Aurelius"]
+["The Three Musketeers","Alexandre Dumas"],
+["The Stranger","Albert Camus"],
+["The Plague","Albert Camus"],
+["Nausea","Jean-Paul Sartre"],
+["Candide","Voltaire"],
+["The Republic","Plato"],
+["Symposium","Plato"],
+["Meditations","Marcus Aurelius"],
+["The Prince","Niccolò Machiavelli"],
+["The Art of War","Sun Tzu"],
+["The Confessions","Saint Augustine"],
+["The Analects","Confucius"],
+["Walden","Henry David Thoreau"],
+["Civil Disobedience","Henry David Thoreau"],
+["The Scarlet Letter","Nathaniel Hawthorne"],
+["Moby-Dick","Herman Melville"],
+["The Call of the Wild","Jack London"],
+["The Jungle","Upton Sinclair"],
+["The Awakening","Kate Chopin"],
+["A Room of One's Own","Virginia Woolf"],
+["To the Lighthouse","Virginia Woolf"],
+["Mrs Dalloway","Virginia Woolf"],
+["The Metamorphosis","Franz Kafka"],
+["The Trial","Franz Kafka"],
+["The Castle","Franz Kafka"],
+["The Little Prince","Antoine de Saint-Exupéry"],
+["The Plague","Daniel Defoe"],
+["Robinson Crusoe","Daniel Defoe"],
+["Gulliver's Travels","Jonathan Swift"],
+["The Importance of Being Earnest","Oscar Wilde"],
+["The Waste Land","T.S. Eliot"],
+["Selected Poems","Emily Dickinson"],
+["Leaves of Grass","Walt Whitman"],
+["The Portable Nietzsche","Friedrich Nietzsche"],
+["Thus Spoke Zarathustra","Friedrich Nietzsche"],
+["Beyond Good and Evil","Friedrich Nietzsche"],
+["The Interpretation of Dreams","Sigmund Freud"],
+["The Origin of Species","Charles Darwin"],
+["The Communist Manifesto","Karl Marx"],
+["The Autobiography of Malcolm X","Malcolm X"],
+["A Passage to India","E.M. Forster"],
+["Howards End","E.M. Forster"],
+["The Good Soldier","Ford Madox Ford"],
+["The Age of Innocence","Edith Wharton"],
+["The House of Mirth","Edith Wharton"],
+["The Bell Jar","Sylvia Plath"],
+["The Complete Stories","Flannery O'Connor"],
+["One Hundred Years of Solitude","Gabriel García Márquez"],
+["Love in the Time of Cholera","Gabriel García Márquez"],
+["The Master and Margarita","Mikhail Bulgakov"]
 ];
+  let saved = JSON.parse(localStorage.getItem("penguinLibrary") || "{}");
+
+function render() {
+
+  let search = document.getElementById("search").value.toLowerCase();
+  let area = document.getElementById("books");
+
+  area.innerHTML = "";
+
+  let owned = 0;
+  let read = 0;
+  let wishlist = 0;
+
+  books.forEach((book,index)=>{
+
+    if(saved[index]?.owned) owned++;
+    if(saved[index]?.read) read++;
+    if(saved[index]?.wishlist) wishlist++;
+
+    let text = (book[0] + " " + book[1]).toLowerCase();
+
+    if(text.includes(search)) {
+
+      area.innerHTML += `
+
+      <div class="book">
+
+      <b>${index + 1}. ${book[0]}</b>
+
+      <div class="author">${book[1]}</div>
+
+      <div class="checks">
+
+      <label>
+      <input type="checkbox"
+      ${saved[index]?.owned ? "checked":""}
+      onchange="updateBook(${index},'owned')">
+      I own this
+      </label>
+
+      <label>
+      <input type="checkbox"
+      ${saved[index]?.read ? "checked":""}
+      onchange="updateBook(${index},'read')">
+      I have read this
+      </label>
+
+      <label>
+      <input type="checkbox"
+      ${saved[index]?.wishlist ? "checked":""}
+      onchange="updateBook(${index},'wishlist')">
+      Wishlist
+      </label>
+
+      </div>
+
+      </div>
+
+      `;
+    }
+
+  });
 
 
-let owned = JSON.parse(localStorage.getItem("penguinOwned") || "{}");
-
-
-function render(){
-
-let search = document.getElementById("search").value.toLowerCase();
-
-let area = document.getElementById("books");
-area.innerHTML = "";
-
-let count = Object.keys(owned).length;
-
-document.getElementById("stats").innerHTML =
-"Collected: " + count + " / " + books.length;
-
-
-books.forEach((book,index)=>{
-
-let text = (book[0] + " " + book[1]).toLowerCase();
-
-if(text.includes(search)){
-
-area.innerHTML += `
-
-<div class="book">
-
-<b>${index+1}. ${book[0]}</b>
-
-<div class="author">${book[1]}</div>
-
-<label>
-<input type="checkbox"
-${owned[index] ? "checked" : ""}
-onchange="toggle(${index})">
-
-I own this
-
-</label>
-
-</div>
-
-`;
+  document.getElementById("stats").innerHTML =
+  "Owned: " + owned +
+  " | Read: " + read +
+  " | Wishlist: " + wishlist +
+  " | Total: " + books.length;
 
 }
 
-});
+
+function updateBook(index,type){
+
+  if(!saved[index]){
+    saved[index]={};
+  }
+
+  saved[index][type] = !saved[index][type];
+
+  localStorage.setItem(
+    "penguinLibrary",
+    JSON.stringify(saved)
+  );
+
+  render();
 
 }
 
 
-function toggle(index){
-
-owned[index] = !owned[index];
-
-if(!owned[index]){
-delete owned[index];
-}
-
-localStorage.setItem(
-"penguinOwned",
-JSON.stringify(owned)
-);
-
-render();
-
-}
-
-
-document.getElementById("search")
+document
+.getElementById("search")
 .addEventListener("input",render);
 
 
