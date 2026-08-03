@@ -322,33 +322,35 @@ async function startScanner(){
 
     try {
 
-        await codeReader.decodeFromVideoDevice(
-            undefined,
-            video,
-            (result, error) => {
+           await codeReader.decodeFromVideoDevice(
+        undefined,
+        video,
+        (result, error) => {
 
-                if(result){
+            if(result){
 
-                    codeReader.reset();
+                codeReader.reset();
 
-                    lookupISBNNumber(result.text);
-
-                }
+                lookupISBNNumber(result.text);
 
             }
-        );
 
-    }
-
-    catch(error){
-
-        document.getElementById("scanResult").innerHTML =
-        "Scanner error: " + error;
-
-    }
+        }
+    );
 
 }
-    async function lookupISBNNumber(isbn){
+
+catch(error){
+
+    document.getElementById("scanResult").innerHTML =
+    "Scanner error: " + error;
+
+}
+
+}
+
+
+async function lookupISBNNumber(isbn){
 
     let result =
     document.getElementById("scanResult");
