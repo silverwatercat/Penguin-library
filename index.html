@@ -348,13 +348,13 @@ height: { ideal: 1080 }
     },
             video,
             (result, error) => {
+if(result){
 
-                if(result){
+    let isbn = cleanISBN(result.text);
 
-                    document.getElementById("scanResult").innerHTML =
-                    "ISBN found: " + result.text;
-
-                   let isbn = cleanISBN(result.text);
+    document.getElementById("scanResult").innerHTML =
+    "Scanned: " + result.text + "<br>Clean ISBN: " + isbn;
+              
 
 stopScanner();
 
