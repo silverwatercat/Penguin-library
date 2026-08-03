@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Penguin Library</title>
 
+<style>
+body {
+  font-family: Georgia, serif;
+  background: #f7f3ea;
+  color: #222;
+  margin: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.search {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #999;
+  box-sizing: border-box;
+}
+
+.stats {
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.book {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+}
+
+.author {
+  color: #555;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📚 Penguin Library</h1>
+
+<div class="stats" id="stats"></div>
+
+<input class="search" id="search" placeholder="Search title or author">
+
+<div id="books"></div>
+
+
+<script>
+
+const books = [
+["Pride and Prejudice","Jane Austen"],
+["Jane Eyre","Charlotte Brontë"],
+["Wuthering Heights","Emily Brontë"],
+["Frankenstein","Mary Shelley"],
+["Dracula","Bram Stoker"],
+["The Picture of Dorian Gray","Oscar Wilde"],
+["The Great Gatsby","F. Scott Fitzgerald"],
+["1984","George Orwell"],
+["Animal Farm","George Orwell"],
+["The Odyssey","Homer"],
+["The Iliad","Homer"],
+["Crime and Punishment","Fyodor Dostoevsky"],
+["The Brothers Karamazov","Fyodor Dostoevsky"],
+["Anna Karenina","Leo Tolstoy"],
+["War and Peace","Leo Tolstoy"],
+["Don Quixote","Miguel de Cervantes"],
+["Les Misérables","Victor Hugo"],
+["The Count of Monte Cristo","Alexandre Dumas"],
+["Treasure Island","Robert Louis Stevenson"],
+["Meditations","Marcus Aurelius"]
+];
+
+
+let owned = JSON.parse(localStorage.getItem("penguinOwned") || "{}");
+
+
+function render(){
+
+let search = document.getElementById("search").value.toLowerCase();
+
+let area = document.getElementById("books");
+area.innerHTML = "";
+
+let count = Object.keys(owned).length;
+
+document.getElementById("stats").innerHTML =
+"Collected: " + count + " / " + books.length;
+
+
+books.forEach((book,index)=>{
+
+let text = (book[0] + " " + book[1]).toLowerCase();
+
+if(text.includes(search)){
+
+area.innerHTML += `
+
+<div class="book">
+
+<b>${index+1}. ${book[0]}</b>
+
+<div class="author">${book[1]}</div>
+
+<label>
+<input type="checkbox"
+${owned[index] ? "checked" : ""}
+onchange="toggle(${index})">
+
+I own this
+
+</label>
+
+</div>
+
+`;
+
+}
+
+});
+
+}
+
+
+function toggle(index){
+
+owned[index] = !owned[index];
+
+if(!owned[index]){
+delete owned[index];
+}
+
+localStorage.setItem(
+"penguinOwned",
+JSON.stringify(owned)
+);
+
+render();
+
+}
+
+
+document.getElementById("search")
+.addEventListener("input",render);
+
+
+render();
+
+</script>
+
+</body>
+</html>
