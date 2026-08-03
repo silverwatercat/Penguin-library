@@ -332,7 +332,9 @@ async function startScanner(){
        await codeReader.decodeFromConstraints(
     {
         video: {
-            facingMode: "environment"
+           facingMode: { ideal: "environment" },
+width: { ideal: 1920 },
+height: { ideal: 1080 }
         }
     },
             video,
@@ -384,9 +386,6 @@ let data = await response.json();
 
 console.log(data);
 
-console.log(data);
-
-console.log(data);
 
 
         let title =
@@ -451,8 +450,7 @@ console.log(data);
     "Lookup error: " + error.message;
 
 }
-    let data =
-await response.json();
+    
 }
 
 
