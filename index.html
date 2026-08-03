@@ -436,29 +436,30 @@ if(!book){
     }
 }
 
-       let data = await response.json();
+      let title = book.title || "Unknown title";
 
-data = data["ISBN:" + isbn];
+let author = "Unknown author";
 
-if(!data){
-    throw new Error("ISBN not found in OpenLibrary");
+if(book.authors && book.authors.length){
+
+    if(book.authors[0].key){
+
+        let authorResponse = await fetch(
+            "https://openlibrary.org" + book.authors[0].key + ".json"
+        );
+
+        let authorData = await authorResponse.json();
+
+        author = authorData.name || author;
+
+    } 
+    else if(book.authors[0].name){
+
+        author = book.authors[0].name;
+
+    }
+
 }
-
-let title = data.title || "Unknown title";
-
-        let author = "Unknown author";
-
-        if(data.authors && data.authors.length){
-
-            let authorResponse = await fetch(
-                "https://openlibrary.org" + data.authors[0].key + ".json"
-            );
-
-            let authorData = await authorResponse.json();
-
-            author = authorData.name || author;
-
-        }
 
         result.innerHTML = `
         <div class="book">
