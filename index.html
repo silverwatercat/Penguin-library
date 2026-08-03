@@ -408,24 +408,6 @@ let data = await response.json();
 
 let title = data.title || "Unknown";
 
-document.getElementById("scanResult").innerHTML = `
-
-<b>${title}</b>
-<br>
-ISBN: ${isbn}
-
-<br><br>
-
-<button onclick="addScannedBook('${title}')">
-Add to Black Spine Collection
-</button>
-
-`;
-
-}
-
-catch{
-
 function addScannedBook(title){
 
 alert(title + " added!");
