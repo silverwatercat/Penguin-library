@@ -72,7 +72,7 @@ label {
 <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
 <script>
 
-const books = [["The Odyssey","Homer"],
+let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [["The Odyssey","Homer"],
 ["The Iliad","Homer"],
 ["The Aeneid","Virgil"],
 ["The Divine Comedy","Dante Alighieri"],
@@ -372,7 +372,7 @@ function addScannedBook(title,author){
 books.push([title,author]);
 
 localStorage.setItem(
-"penguinBooks",
+"penguinLibraryBooks",
 JSON.stringify(books)
 );
 
@@ -381,3 +381,8 @@ alert(title+" added!");
 render();
 
 }
+
+</script>
+
+</body>
+</html>
