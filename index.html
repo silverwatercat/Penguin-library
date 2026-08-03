@@ -368,7 +368,7 @@ lookupISBNNumber(isbn);
     }
 
 }
-    function stopScanner(){
+  function stopScanner(){
 
     if(codeReader){
         codeReader.reset();
@@ -381,7 +381,6 @@ lookupISBNNumber(isbn);
     }
 
     document.getElementById("scanner").innerHTML="";
-    document.getElementById("scanResult").innerHTML="";
 
 }
 async function lookupISBNNumber(isbn){
