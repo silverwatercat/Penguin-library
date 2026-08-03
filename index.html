@@ -278,14 +278,34 @@ lookupISBNNumber(isbn);
 
 }
 
+let codeReader;
 
-async function lookupISBNNumber(isbn){
+async function startScanner() {
 
-let result=document.getElementById("scanResult");
+    document.getElementById("scanner").innerHTML =
+        '<video id="camera" style="width:100%;max-width:400px;"></video>';
 
-result.innerHTML="Looking up ISBN "+isbn+"...";
+    codeReader = new ZXing.BrowserMultiFormatReader();
 
-try{
+    try {
+
+        const result = await codeReader.decodeOnceFromVideoDevice(
+            undefined,
+            "camera"
+        );
+
+        lookupISBNNumber(result.text);
+
+        codeReader.reset();
+
+    } catch (err) {
+
+        document.getElementById("scanResult").innerHTML =
+            "No barcode detected.";
+
+    }
+
+}
 
 let response=await fetch(
 "https://openlibrary.org/isbn/"+isbn+".json"
