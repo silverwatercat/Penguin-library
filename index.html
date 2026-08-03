@@ -318,6 +318,10 @@ function cleanISBN(code){
 
     let isbn = code.replace(/\D/g,'');
 
+    if(isbn.length === 12 && isbn.startsWith("0")){
+        isbn = "978" + isbn.substring(1);
+    }
+
     return isbn;
 
 }
