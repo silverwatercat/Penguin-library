@@ -331,8 +331,8 @@ async function startScanner(){
         }
 
         await codeReader.decodeFromVideoDevice(
-            devices[0].deviceId,
-            video,
+    undefined,
+    video,
             (result, error) => {
 
                 if(result){
@@ -356,19 +356,7 @@ async function startScanner(){
     }
 
 }
-
-    catch(error){
-
-        document.getElementById("scanResult").innerHTML =
-        "No barcode detected.";
-
-    }
-
-}
-
-
-
-async function lookupISBNNumber(isbn){
+    async function lookupISBNNumber(isbn){
 
     let result =
     document.getElementById("scanResult");
