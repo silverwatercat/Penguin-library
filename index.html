@@ -313,32 +313,43 @@ async function startScanner(){
     '<video id="camera" autoplay playsinline></video>';
 
     document.getElementById("scanResult").innerHTML =
-    "Opening camera...";
+    "Starting scanner...";
 
     const video = document.getElementById("camera");
 
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+
     try {
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" }
-        });
+        await codeReader.decodeFromVideoDevice(
+            undefined,
+            video,
+            (result, error) => {
 
-        video.srcObject = stream;
+                if(result){
 
-        document.getElementById("scanResult").innerHTML =
-        "Camera is working. Point at barcode.";
+                    document.getElementById("scanResult").innerHTML =
+                    "ISBN found: " + result.text;
+
+                    codeReader.reset();
+
+                    lookupISBNNumber(result.text);
+
+                }
+
+            }
+        );
 
     }
 
     catch(error){
 
         document.getElementById("scanResult").innerHTML =
-        "Camera error: " + error.message;
+        "Scanner error: " + error.message;
 
     }
 
 }
-
 async function lookupISBNNumber(isbn){
 
     let result =
