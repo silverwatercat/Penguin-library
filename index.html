@@ -307,48 +307,37 @@ render();
 
 
 let codeReader;
-
-
 async function startScanner(){
 
     document.getElementById("scanner").innerHTML =
-    `
-    <video id="camera" style="width:100%;max-width:400px;"></video>
-    `;
+    '<video id="camera" autoplay playsinline></video>';
+
+    document.getElementById("scanResult").innerHTML =
+    "Opening camera...";
 
     const video = document.getElementById("camera");
 
-    codeReader = new ZXing.BrowserMultiFormatReader();
-
     try {
 
-           await codeReader.decodeFromVideoDevice(
-        undefined,
-        video,
-        (result, error) => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" }
+        });
 
-            if(result){
+        video.srcObject = stream;
 
-                codeReader.reset();
+        document.getElementById("scanResult").innerHTML =
+        "Camera is working. Point at barcode.";
 
-                lookupISBNNumber(result.text);
+    }
 
-            }
+    catch(error){
 
-        }
-    );
+        document.getElementById("scanResult").innerHTML =
+        "Camera error: " + error.message;
 
-}
-
-catch(error){
-
-    document.getElementById("scanResult").innerHTML =
-    "Scanner error: " + error;
+    }
 
 }
-
-}
-
 
 async function lookupISBNNumber(isbn){
 
