@@ -329,16 +329,29 @@ async function startScanner(){
 
         const codeReader = new ZXing.BrowserMultiFormatReader();
 
-        await codeReader.decodeFromConstraints(
-            {
-               video: {
-    facingMode: { ideal: "environment" },
-    width: { ideal: 1920 },
-    height: { ideal: 1080 }
-                       }
-}           
-            },
-            video,
+      await codeReader.decodeFromConstraints(
+    {
+        video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+        }
+    },
+    video,
+    (result, error) => {
+
+        if(result){
+
+            document.getElementById("scanResult").innerHTML =
+            "ISBN found: " + result.text;
+
+            codeReader.reset();
+
+            lookupISBNNumber(result.text);
+        }
+
+    }
+);
             (result, error) => {
 
                 if(result){
