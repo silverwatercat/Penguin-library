@@ -334,9 +334,10 @@ async function startScanner(){
                video: {
     facingMode: { ideal: "environment" },
     width: { ideal: 1920 },
-    height: { ideal: 1080 }
-}
-            },
+    height: { ideal: 1080 },
+                   focusMode: "continuous"
+               }
+}            },
             video,
             (result, error) => {
 
