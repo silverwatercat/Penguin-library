@@ -395,19 +395,6 @@ let isbn = data.codeResult.code;
 Quagga.stop();
 async function lookupISBNNumber(isbn){
 
-document.getElementById("scanResult").innerHTML =
-"Found ISBN: " + isbn + "<br>Looking up book...";
-
-try{
-
-let response = await fetch(
-"https://openlibrary.org/isbn/" + isbn + ".json"
-);
-
-let data = await response.json();
-
-let title = data.title || "Unknown";
-
 function addScannedBook(title){
 
 alert(title + " added!");
