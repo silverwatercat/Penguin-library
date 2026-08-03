@@ -410,9 +410,15 @@ console.log("RESPONSE STATUS:", response.status);
             throw new Error("ISBN not found");
         }
 
-        let data = await response.json();
+       let data = await response.json();
 
-        let title = data.title || "Unknown title";
+data = data["ISBN:" + isbn];
+
+if(!data){
+    throw new Error("ISBN not found in OpenLibrary");
+}
+
+let title = data.title || "Unknown title";
 
         let author = "Unknown author";
 
