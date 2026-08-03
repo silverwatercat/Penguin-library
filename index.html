@@ -273,6 +273,89 @@ render();
 function startScanner(){
 
 document.getElementById("scanner").innerHTML = `
+<div id="camera"
+style="width:100%; max-width:400px;"></div>
+`;
+
+Quagga.init({
+inputStream:{
+name:"Live",
+type:"LiveStream",
+target:document.querySelector("#camera"),
+constraints:{
+facingMode:"environment"
+}
+},
+decoder:{
+readers:[
+"ean_reader",
+"ean_8_reader"
+]
+}
+},function(err){
+
+if(err){
+document.getElementById("scanner").innerHTML =
+"Camera error: " + err;
+return;
+}
+
+Quagga.start();
+
+});
+
+
+Quagga.onDetected(function(data){
+
+let isbn = data.codeResult.code;
+
+Quagga.stop();
+async function lookupISBNNumber(isbn){
+
+document.getElementById("scanResult").innerHTML =
+"Found ISBN: " + isbn + "<br>Looking up book...";
+
+try{
+
+let response = await fetch(
+"https://openlibrary.org/isbn/" + isbn + ".json"
+);
+
+let data = await response.json();
+
+let title = data.title || "Unknown";
+
+document.getElementById("scanResult").innerHTML = `
+
+<b>${title}</b>
+<br>
+ISBN: ${isbn}
+
+<br><br>
+
+<button onclick="addScannedBook('${title}')">
+Add to Black Spine Collection
+</button>
+
+`;
+
+}
+
+catch{
+
+document.getElementById("scanResult").innerHTML =
+"ISBN found, but book details were unavailable.";
+
+}
+
+}
+lookupISBNNumber(isbn);
+
+});
+
+}
+
+document.getElementById("scanner").innerHTML = `
 <input id="isbnInput" class="search" 
 placeholder="Enter ISBN number">
 
@@ -333,7 +416,9 @@ title + " added! (We will connect this to your checklist next.)"
 );
 
 }
-</script>
+<script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+<script>
 
 </body>
 </html>
