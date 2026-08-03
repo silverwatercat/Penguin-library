@@ -313,7 +313,7 @@ async function startScanner(){
     '<video id="camera" autoplay playsinline></video>';
 
     document.getElementById("scanResult").innerHTML =
-    "Opening camera...";
+    "Starting scanner...";
 
     const video = document.getElementById("camera");
 
@@ -323,24 +323,28 @@ async function startScanner(){
 
         const devices = await codeReader.listVideoInputDevices();
 
+        document.getElementById("scanResult").innerHTML =
+        "Cameras found: " + devices.length;
+
+
         if(devices.length === 0){
             document.getElementById("scanResult").innerHTML =
-            "No camera found.";
+            "No camera detected.";
             return;
         }
 
 
         codeReader.decodeFromVideoDevice(
-            devices[0].deviceId,
+            devices[devices.length - 1].deviceId,
             video,
             (result, error)=>{
 
                 if(result){
 
-                    codeReader.reset();
-
                     document.getElementById("scanResult").innerHTML =
-                    "Barcode found: " + result.text;
+                    "Found barcode: " + result.text;
+
+                    codeReader.reset();
 
                     lookupISBNNumber(result.text);
 
