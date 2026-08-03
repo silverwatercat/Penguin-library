@@ -315,7 +315,13 @@ document
 render();
 
 function cleanISBN(code){
-    return code.replace(/\D/g,'');
+    let isbn = code.replace(/\D/g,'');
+
+    if(isbn.length === 13 || isbn.length === 10){
+        return isbn;
+    }
+
+    return isbn.slice(-13);
 }
 let codeReader;
 async function startScanner(){
