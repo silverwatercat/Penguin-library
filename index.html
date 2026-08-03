@@ -309,26 +309,33 @@ render();
 let codeReader;
 
 
-async function startScanner(){
+async function startScanner() {
 
     document.getElementById("scanner").innerHTML =
-    `
-    <video id="camera" style="width:100%;max-width:400px;"></video>
-    `;
+    '<video id="camera" style="width:100%;max-width:400px;"></video>';
 
-    const video = document.getElementById("camera");
-
-    codeReader = new ZXing.BrowserMultiFormatReader();
+    const codeReader = new ZXing.BrowserMultiFormatReader();
 
     try {
 
-        const devices = await codeReader.listVideoInputDevices();
+        const result = await codeReader.decodeOnceFromVideoDevice(
+            undefined,
+            "camera"
+        );
 
-        if(devices.length === 0){
-            document.getElementById("scanResult").innerHTML =
-            "No camera found.";
-            return;
-        }
+        document.getElementById("scanResult").innerHTML =
+        "Barcode found: " + result.text;
+
+        lookupISBNNumber(result.text);
+
+    } catch(error) {
+
+        document.getElementById("scanResult").innerHTML =
+        "No barcode detected.";
+
+    }
+
+}
 
         await codeReader.decodeFromVideoDevice(
             devices[0].deviceId,
