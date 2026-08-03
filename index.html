@@ -215,6 +215,9 @@ let saved = JSON.parse(
 localStorage.getItem("penguinLibrary") || "{}"
 );
 
+let archivedBooks = JSON.parse(
+localStorage.getItem("penguinArchivedBooks") || "[]"
+);
 function render(){
 
     let search =
@@ -268,9 +271,10 @@ ${saved[index]?.wishlist?"checked":""}
 onchange="updateBook(${index},'wishlist')">
 Wishlist
 </label>
-<button onclick="deleteBook(${index})">
-Delete Book
-</button>
+<label>
+<input type="checkbox"
+onchange="archiveBook(${index})">
+Archive this book
 </div>
 
 `;
@@ -454,7 +458,7 @@ function addScannedBook(title,author){
 
 
     alert(title+" added!");
-
+document.getElementById("scanResult").innerHTML = "";
 
     render();
 
@@ -479,6 +483,29 @@ function deleteBook(index){
         );
 
         render();
+    }
+
+}
+function archiveBook(index){
+
+    if(confirm("Move this book to the archive?")){
+
+        archivedBooks.push(books[index]);
+
+        books.splice(index,1);
+
+        localStorage.setItem(
+            "penguinArchivedBooks",
+            JSON.stringify(archivedBooks)
+        );
+
+        localStorage.setItem(
+            "penguinLibraryBooks",
+            JSON.stringify(books)
+        );
+
+        render();
+
     }
 
 }
