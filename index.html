@@ -345,7 +345,7 @@ async function startScanner(){
 
                     codeReader.reset();
 
-                    lookupISBNNumber(result.text);
+                    lookupISBNNumber(result.text.replace(/\D/g,''));
                 }
 
             }
