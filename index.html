@@ -286,9 +286,12 @@ facingMode:"environment"
 }
 },
 decoder:{
-readers:["ean_reader"]
+readers:[
+"ean_reader",
+"ean_8_reader"
+]
 }
-}, function(err){
+},function(err){
 
 if(err){
 document.getElementById("scanner").innerHTML =
@@ -303,7 +306,7 @@ Quagga.start();
 
 Quagga.onDetected(function(data){
 
-let isbn = data.codeResult.code;
+let isbn=data.codeResult.code;
 
 Quagga.stop();
 
@@ -328,14 +331,28 @@ let response=await fetch(
 
 let data=await response.json();
 
+let title=data.title || "Unknown title";
+let author="Unknown author";
+
+if(data.authors){
+author=data.authors[0].name || author;
+}
+
+
 result.innerHTML=`
-<b>${data.title || "Unknown title"}</b>
+
+<b>${title}</b>
+<br>
+${author}
 <br>
 ISBN: ${isbn}
+
 <br><br>
-<button onclick="addScannedBook('${data.title}')">
-Add to Black Spine Collection
+
+<button onclick="addScannedBook('${title.replace(/'/g,"\\'")}','${author.replace(/'/g,"\\'")}')">
+Add to Library
 </button>
+
 `;
 
 }
@@ -349,21 +366,18 @@ result.innerHTML="Book not found.";
 }
 
 
-function addScannedBook(title){
+
+function addScannedBook(title,author){
+
+books.push([title,author]);
+
+localStorage.setItem(
+"penguinBooks",
+JSON.stringify(books)
+);
 
 alert(title+" added!");
 
-}
-
-function addScannedBook(title){
-
-alert(title+" added!");
+render();
 
 }
-
-</script>
-
-</body>
-</html>
-
-
