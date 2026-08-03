@@ -322,17 +322,9 @@ async function startScanner(){
 
     try {
 
-        const devices = await codeReader.listVideoInputDevices();
-
-        if(devices.length === 0){
-            document.getElementById("scanResult").innerHTML =
-            "No camera found.";
-            return;
-        }
-
         await codeReader.decodeFromVideoDevice(
-    undefined,
-    video,
+            undefined,
+            video,
             (result, error) => {
 
                 if(result){
@@ -348,7 +340,14 @@ async function startScanner(){
 
     }
 
-  
+    catch(error){
+
+        document.getElementById("scanResult").innerHTML =
+        "Scanner error: " + error;
+
+    }
+
+}
     async function lookupISBNNumber(isbn){
 
     let result =
