@@ -321,8 +321,13 @@ function cleanISBN(code){
         return isbn;
     }
 
-    return isbn.slice(-13);
+    function cleanISBN(code){
+
+    let isbn = code.replace(/\D/g,'');
+
+    return isbn;
 }
+
 let codeReader;
 async function startScanner(){
 
@@ -351,6 +356,9 @@ height: { ideal: 1080 }
 if(result){
 
     let isbn = cleanISBN(result.text);
+
+console.log("RAW BARCODE:", result.text);
+console.log("CLEAN ISBN:", isbn);
 
     document.getElementById("scanResult").innerHTML =
     "Scanned: " + result.text + "<br>Clean ISBN: " + isbn;
