@@ -380,8 +380,10 @@ async function lookupISBNNumber(isbn){
         );
 
 
-        let data =
-        await response.json();
+       let data =
+await response.json();
+
+console.log(data);
 
 
         let title =
@@ -440,13 +442,14 @@ async function lookupISBNNumber(isbn){
 
     }
 
-    catch{
+  catch(error){
 
-        result.innerHTML =
-        "Book not found.";
+    result.innerHTML =
+    "Lookup error: " + error.message;
 
-    }
-
+}
+    let data =
+await response.json();
 }
 
 
