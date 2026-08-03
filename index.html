@@ -434,17 +434,6 @@ if(data.authors){
         let authorResponse = await fetch(
             "https://openlibrary.org" + authorKey + ".json"
         );
-
-        let authorData = await authorResponse.json();
-
-        author = authorData.name || author;
-
-    } else if(data.authors[0].name){
-
-        author = data.authors[0].name;
-
-    }
-}
   
 
         let authorData = await authorResponse.json();
