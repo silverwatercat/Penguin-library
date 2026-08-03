@@ -268,7 +268,9 @@ ${saved[index]?.wishlist?"checked":""}
 onchange="updateBook(${index},'wishlist')">
 Wishlist
 </label>
-
+<button onclick="deleteBook(${index})">
+Delete Book
+</button>
 </div>
 
 `;
@@ -458,7 +460,28 @@ function addScannedBook(title,author){
 
 }
 
+function deleteBook(index){
 
+    if(confirm("Remove this book from your library?")){
+
+        books.splice(index,1);
+
+        localStorage.setItem(
+            "penguinLibraryBooks",
+            JSON.stringify(books)
+        );
+
+        delete saved[index];
+
+        localStorage.setItem(
+            "penguinLibrary",
+            JSON.stringify(saved)
+        );
+
+        render();
+    }
+
+}
 </script>
 
 </body>
