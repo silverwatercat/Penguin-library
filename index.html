@@ -327,7 +327,7 @@ async function startScanner(){
 
     try {
 
-        const codeReader = new ZXing.BrowserMultiFormatReader();
+        codeReader = new ZXing.BrowserMultiFormatReader();
 
        await codeReader.decodeFromConstraints(
     {
