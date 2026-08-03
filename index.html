@@ -159,7 +159,7 @@ localStorage.getItem("penguinLibraryBooks")
 ["The Hunchback of Notre-Dame","Victor Hugo"],
 ["The Count of Monte Cristo","Alexandre Dumas"],
 ["The Three Musketeers","Alexandre Dumas"]
-  ,
+,
 ["The Stranger","Albert Camus"],
 ["The Plague","Albert Camus"],
 ["Nausea","Jean-Paul Sartre"],
@@ -281,7 +281,7 @@ Wishlist
         `Owned: ${owned} | Read: ${read} | Wishlist: ${wishlist} | Total: ${books.length}`;
 
 }
-  function updateBook(index,type){
+    function updateBook(index,type){
 
     if(!saved[index]){
         saved[index]={};
@@ -309,60 +309,30 @@ render();
 let codeReader;
 
 
-async function startScanner() {
+async function startScanner(){
+
+alert("Scanner button works");
 
     document.getElementById("scanner").innerHTML =
-    '<video id="camera" style="width:100%;max-width:400px;"></video>';
+    `
+    <video id="camera"></video>
+    `;
 
-    const codeReader = new ZXing.BrowserMultiFormatReader();
+    codeReader = new ZXing.BrowserMultiFormatReader();
 
-    try {
+    try{
 
-        const result = await codeReader.decodeOnceFromVideoDevice(
+        const result =
+        await codeReader.decodeOnceFromVideoDevice(
             undefined,
             "camera"
         );
 
-        document.getElementById("scanResult").innerHTML =
-        "Barcode found: " + result.text;
+        codeReader.reset();
 
         lookupISBNNumber(result.text);
 
-    } catch(error) {
-
-        document.getElementById("scanResult").innerHTML =
-        "No barcode detected.";
-
     }
-
-}
-
-        await codeReader.decodeFromVideoDevice(
-            devices[0].deviceId,
-            video,
-            (result, error) => {
-
-                if(result){
-
-                    codeReader.reset();
-
-                    lookupISBNNumber(result.text);
-
-                }
-
-            }
-        );
-
-    }
-
-    catch(error){
-
-        document.getElementById("scanResult").innerHTML =
-        "Camera error: " + error;
-
-    }
-
-}
 
     catch(error){
 
