@@ -319,36 +319,29 @@ async function startScanner(){
 
     try {
 
-        const devices = await ZXing.BrowserMultiFormatReader.listVideoInputDevices();
-
-        let backCamera = devices.find(device =>
-            device.label.toLowerCase().includes("back") ||
-            device.label.toLowerCase().includes("rear") ||
-            device.label.toLowerCase().includes("environment")
-        );
-
-        let cameraId = backCamera ? backCamera.deviceId : devices[devices.length - 1].deviceId;
-
         const codeReader = new ZXing.BrowserMultiFormatReader();
 
-        codeReader.decodeFromVideoDevice(
-            cameraId,
+        await codeReader.decodeFromConstraints(
+            {
+                video: {
+                    facingMode: { ideal: "environment" }
+                }
+            },
             video,
             (result, error) => {
 
                 if(result){
 
+                    document.getElementById("scanResult").innerHTML =
+                    "ISBN found: " + result.text;
+
                     codeReader.reset();
 
                     lookupISBNNumber(result.text);
-
                 }
 
             }
         );
-
-        document.getElementById("scanResult").innerHTML =
-        "Point rear camera at barcode.";
 
     }
 
