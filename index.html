@@ -313,7 +313,7 @@ async function startScanner(){
     '<video id="camera" autoplay playsinline></video>';
 
     document.getElementById("scanResult").innerHTML =
-    "Starting scanner...";
+    "Finding camera...";
 
     const video = document.getElementById("camera");
 
@@ -321,8 +321,21 @@ async function startScanner(){
 
     try {
 
+        const cameras = await codeReader.listVideoInputDevices();
+
+        document.getElementById("scanResult").innerHTML =
+        "Found " + cameras.length + " camera(s). Starting...";
+
+
+        if(cameras.length === 0){
+            document.getElementById("scanResult").innerHTML =
+            "No camera found.";
+            return;
+        }
+
+
         await codeReader.decodeFromVideoDevice(
-            undefined,
+            cameras[0].deviceId,
             video,
             (result, error)=>{
 
