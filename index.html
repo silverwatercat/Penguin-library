@@ -404,11 +404,37 @@ let response = await fetch(
     "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data"
 );
 
-console.log("RESPONSE STATUS:", response.status);
+let data = await response.json();
 
-        if(!response.ok){
-            throw new Error("ISBN not found");
-        }
+console.log("Exact ISBN lookup:", data);
+
+let book = data["ISBN:" + isbn];
+
+if(!book){
+
+    console.log("Trying OpenLibrary search...");
+
+    let searchResponse = await fetch(
+        "https://openlibrary.org/search.json?q=" + isbn
+    );
+
+    let searchData = await searchResponse.json();
+
+    if(searchData.docs.length){
+
+        book = {
+            title: searchData.docs[0].title,
+            authors: searchData.docs[0].author_name 
+                ? searchData.docs[0].author_name.map(name => ({name:name}))
+                : []
+        };
+
+    } else {
+
+        throw new Error("Book not found");
+
+    }
+}
 
        let data = await response.json();
 
