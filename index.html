@@ -94,6 +94,8 @@ placeholder="Search title or author">
 
 <button onclick="startScanner()">📷 Scan Book</button>
 
+<button onclick="stopScanner()">⛔ Stop Scanner</button>
+
 <div id="scanResult"></div>
 
 <div id="scanner"></div>
@@ -363,6 +365,22 @@ height: { ideal: 1080 }
     }
 
 }
+    function stopScanner(){
+
+    if(codeReader){
+        codeReader.reset();
+    }
+
+    let video = document.getElementById("camera");
+
+    if(video && video.srcObject){
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+
+    document.getElementById("scanner").innerHTML="";
+    document.getElementById("scanResult").innerHTML="";
+
+}
 async function lookupISBNNumber(isbn){
 
     let result =
@@ -374,17 +392,23 @@ async function lookupISBNNumber(isbn){
 
     try{
 
-        let response = await fetch(
+     let response = await fetch(
     "https://openlibrary.org/isbn/" + isbn + ".json"
 );
+
+if(!response.ok){
+    response = await fetch(
+        "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data"
+    );
+}
 
 if(!response.ok){
     throw new Error("ISBN not found (" + response.status + ")");
 }
 
 let data = await response.json();
-
-console.log(data);
+console.log("ISBN scanned:", isbn);
+console.log("OpenLibrary response:", data);
 
 
 
