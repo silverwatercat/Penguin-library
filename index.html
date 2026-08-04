@@ -344,18 +344,6 @@ height: { ideal: 1080 }
             (result, error) => {
 if(result){
 
-let raw = result.text.toString();
-
-console.log("RAW BARCODE:", raw);
-
-let isbn = cleanISBN(raw);
-
-console.log("CLEAN ISBN:", isbn);
-
-alert("ISBN SENT: " + isbn);
-
-stopScanner();
-
 let raw = result.text;
 
 alert("RAW = " + raw);
