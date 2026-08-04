@@ -344,11 +344,13 @@ height: { ideal: 1080 }
             (result, error) => {
 if(result){
 
-let raw = result.text;
+    let raw = result.text;
 
-alert("RAW = " + raw);
+    let isbn = cleanISBN(raw);
 
-stopScanner();
+    stopScanner();
+
+    lookupISBNNumber(isbn);
 
 }
 });
