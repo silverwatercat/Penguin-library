@@ -354,41 +354,101 @@ async function lookupISBNNumber(isbn) {
 
   resultEl.innerHTML = "Looking up ISBN: " + isbn + " …";
 
+  // Helper to safely escape text for HTML attributes
+  function escapeAttr(str) {
+    return String(str)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/"/g, "&quot;");
+  }
+
+  // --- Source 1: Open Library search.json ---
   try {
-    const response = await fetch(
-      "https://openlibrary.org/search.json?isbn=" + encodeURIComponent(isbn)
+    const res = await fetch(
+      "https://openlibrary.org/search.json?isbn=" + encodeURIComponent(isbn) +
+      "&fields=title,author_name,key"
     );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.docs && data.docs.length > 0) {
+        const doc = data.docs[0];
+        const title = doc.title || "Unknown title";
+        const author = doc.author_name ? doc.author_name.join(", ") : "Unknown author";
+        showBook(title, author, isbn);
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn("OpenLibrary search failed:", e);
+  }
 
-    if (!response.ok) throw new Error("HTTP " + response.status);
+  // --- Source 2: Open Library /isbn/{isbn}.json ---
+  try {
+    const res = await fetch(
+      "https://openlibrary.org/isbn/" + encodeURIComponent(isbn) + ".json"
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const title = data.title || "Unknown title";
+      let author = "Unknown author";
 
-    const data = await response.json();
-    console.log("OpenLibrary response:", data);
+      // authors are usually just keys; try to get names if present
+      if (data.authors && data.authors.length) {
+        // Sometimes names are already there, sometimes only keys
+        author = data.authors
+          .map(a => a.name || a.key || "")
+          .filter(Boolean)
+          .join(", ") || "Unknown author";
+      }
 
-    if (!data.docs || data.docs.length === 0) {
-      resultEl.innerHTML = "No book found for ISBN " + isbn;
+      showBook(title, author, isbn);
       return;
     }
+  } catch (e) {
+    console.warn("OpenLibrary /isbn/ failed:", e);
+  }
 
-    const doc = data.docs[0];
-    const title = doc.title || "Unknown title";
-    const author = doc.author_name ? doc.author_name.join(", ") : "Unknown author";
+  // --- Source 3: Google Books (usually most reliable for browsers) ---
+  try {
+    const res = await fetch(
+      "https://www.googleapis.com/books/v1/volumes?q=isbn:" + encodeURIComponent(isbn)
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        const info = data.items[0].volumeInfo;
+        const title = info.title || "Unknown title";
+        const author = info.authors ? info.authors.join(", ") : "Unknown author";
+        showBook(title, author, isbn);
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn("Google Books failed:", e);
+  }
 
-    // Escape for safe insertion into onclick
-    const safeTitle = title.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
-    const safeAuthor = author.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  // All sources failed
+  resultEl.innerHTML = `
+    <div class="book" style="border-color:#c00;">
+      <b>Could not look up ISBN ${isbn}</b><br><br>
+      Possible reasons:<br>
+      • Open Library is temporarily down<br>
+      • Network / CORS issue (try serving the page over http://localhost instead of file://)<br>
+      • The barcode is not a standard book ISBN<br><br>
+      You can still add the book manually by typing the title in the search box
+      (or just wait a few minutes and try scanning again).
+    </div>`;
 
+  function showBook(title, author, isbn) {
     resultEl.innerHTML = `
       <div class="book">
         <b>${title}</b><br>
         ${author}<br>
         ISBN: ${isbn}<br><br>
-        <button onclick="addScannedBook('${safeTitle}', '${safeAuthor}')">
+        <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
           Add to Library
         </button>
       </div>`;
-  } catch (error) {
-    console.error(error);
-    resultEl.innerHTML = "Lookup error: " + error.message;
   }
 }
 
