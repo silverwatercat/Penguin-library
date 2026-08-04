@@ -408,42 +408,46 @@ async function lookupISBNNumber(isbn){
         let title = "";
         let author = "";
 
-        // Try OpenLibrary first
-        try {
+     // Try OpenLibrary first
+try {
 
-            let controller = new AbortController();
+    let controller = new AbortController();
 
-let timeout = setTimeout(() => {
-    controller.abort();
-}, 5000);
+    let timeout = setTimeout(() => {
+        controller.abort();
+    }, 5000);
 
-let response = await fetch(
-    "https://openlibrary.org/search.json?isbn=" + isbn,
-    { signal: controller.signal }
-);
-console.log("OpenLibrary returned");
-clearTimeout(timeout);
+    let response = await fetch(
+        "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data",
+        { signal: controller.signal }
+    );
 
-            let data = await response.json();
+    clearTimeout(timeout);
 
-            console.log("OpenLibrary:", data);
+    let data = await response.json();
 
-            if(data.docs && data.docs.length){
+    console.log("OpenLibrary:", data);
 
-                title = data.docs[0].title || "";
+    let key = "ISBN:" + isbn;
 
-                if(data.docs[0].author_name){
-                    author = data.docs[0].author_name.join(", ");
-                }
+    if(data[key]){
 
-            }
+        title = data[key].title || "";
 
-        }
-        catch(error){
+        if(data[key].authors && data[key].authors.length){
 
-            console.log("OpenLibrary failed");
+            author = data[key].authors[0].name || "";
 
         }
+
+    }
+
+}
+catch(error){
+
+    console.log("OpenLibrary failed", error);
+
+}
 
 
         // Try Google Books if OpenLibrary failed
