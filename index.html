@@ -106,9 +106,13 @@ placeholder="Search title or author">
 <script>
 let codeReader;
     
-let books = JSON.parse(
-localStorage.getItem("penguinLibraryBooks")
-) || [
+let storedBooks = JSON.parse(
+    localStorage.getItem("penguinLibraryBooks")
+);
+
+let books = storedBooks && storedBooks.length
+    ? storedBooks
+    : [
 
 ["The Odyssey","Homer"],
 ["The Iliad","Homer"],
