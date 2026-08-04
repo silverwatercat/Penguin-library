@@ -114,12 +114,10 @@ function debug(message){
 let codeReader;
     
 let storedBooks = JSON.parse(
-    localStorage.getItem("penguinLibraryBooks")
+    localStorage.getItem("penguinLibraryBooks") || "null"
 );
 
-let books = storedBooks && storedBooks.length
-    ? storedBooks
-    : [
+let books = storedBooks || [
 
 ["The Odyssey","Homer"],
 ["The Iliad","Homer"],
