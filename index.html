@@ -454,10 +454,10 @@ let response = await fetch(
 
 clearTimeout(timeout);
 
-    let data = await response.json();
-    alert(data.docs[0]?.title || "NO TITLE FROM OPENLIBRARY");
+   let data = await response.json();
 
-    console.log("OpenLibrary:", data);
+alert("OpenLibrary found: " + data.numFound + 
+"\nTitle: " + (data.docs[0]?.title || "none"));
 
     if(data.docs && data.docs.length){
 
