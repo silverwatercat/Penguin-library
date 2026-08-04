@@ -428,8 +428,7 @@ function stopScanner(){
 
 }
 async function lookupISBNNumber(isbn){
-    alert("LOOKUP FUNCTION UPDATED");
-
+    
     let result = document.getElementById("scanResult");
 
     result.innerHTML = "SCANNED NUMBER: " + isbn;
@@ -460,9 +459,6 @@ let response = await fetch(
         author = data.docs[0].author_name
             ? data.docs[0].author_name.join(", ")
             : "";
-alert("TITLE=" + title + " AUTHOR=" + author);
-        alert("TITLE SET TO: " + title);
-    alert("AUTHOR SET TO: " + author);
 
 } else {
 
@@ -481,8 +477,6 @@ catch(error){
             alert("NO TITLE AFTER OPENLIBRARY");
             return;
         }
-alert("BEFORE DISPLAY TITLE: " + title + " | AUTHOR: " + author);
-        alert("DISPLAYING: " + title + " / " + author);
         result.innerHTML = `
         <div class="book">
 
