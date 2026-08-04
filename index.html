@@ -355,7 +355,7 @@ if(result){
     let isbn = cleanISBN(result.text);
 
 if(isbn.length === 12){
-    isbn = "978" + isbn;
+    isbn = "978" + isbn.substring(1);
 }
 
 console.log("RAW BARCODE:", result.text);
