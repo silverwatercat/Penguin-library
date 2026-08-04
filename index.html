@@ -356,17 +356,16 @@ height: { ideal: 1080 }
             (result, error) => {
 if(result){
 
-    console.log("RAW BARCODE:", result.text);
+let isbn = result.text.toString().replace(/\D/g,'');
 
-    let isbn = result.text.toString().replace(/\D/g,'');
+console.log("RAW BARCODE:", isbn);
 
-    console.log("FINAL ISBN SENT:", isbn);
+alert("ISBN SENT: " + isbn);
 
-    alert("Sending: " + isbn);
+stopScanner();
 
-    stopScanner();
+lookupISBNNumber(isbn);
 
-    lookupISBNNumber(isbn);
 }
 
             }
