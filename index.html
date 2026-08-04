@@ -69,9 +69,21 @@ video{
 
 <div id="stats" class="stats"></div>
 
-<input id="search" class="search" placeholder="Search title or author">
+<div class="search-container">
 
-<button onclick="startScanner()">📷 Scan Book</button>
+    <input
+        id="search"
+        class="search"
+        placeholder="Search title or author">
+
+    <span
+        class="scan-icon"
+        onclick="startScanner()"
+        title="Scan book">
+        📷
+    </span>
+
+</div>
 <button onclick="showMainLibrary()">📚 Library</button>
 <button onclick="showArchive()">📦 Archive</button>
 
