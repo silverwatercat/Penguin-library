@@ -370,62 +370,6 @@ stopScanner();
 
 lookupISBNNumber(isbn);
 
-async function lookupISBNNumber(isbn){
-
-    let result = document.getElementById("scanResult");
-
-    result.innerHTML = "Looking up ISBN: " + isbn;
-
-    try {
-
-        let response = await fetch(
-            "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
-        );
-
-        let data = await response.json();
-
-        console.log("Google result:", data);
-
-        if(data.totalItems === 0){
-            throw new Error("Book not found");
-        }
-
-        let info = data.items[0].volumeInfo;
-
-        let title = info.title || "Unknown title";
-
-        let author = info.authors
-            ? info.authors.join(", ")
-            : "Unknown author";
-
-
-        result.innerHTML = `
-        <div class="book">
-            <b>${title}</b><br>
-            ${author}<br>
-            ISBN: ${isbn}
-            <br><br>
-            <button onclick="addScannedBook(
-            '${title.replace(/'/g,"\\'")}',
-            '${author.replace(/'/g,"\\'")}'
-            )">
-            Add to Library
-            </button>
-        </div>
-        `;
-
-    }
-
-    catch(error){
-
-        result.innerHTML =
-        "Lookup error: " + error.message;
-
-        console.log(error);
-
-    }
-
-}
   function stopScanner(){
 
     if(codeReader){
