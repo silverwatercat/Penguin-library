@@ -451,12 +451,22 @@ catch(error){
 
             console.log("Trying Google Books...");
             result.innerHTML = "Trying Google Books...";
+            console.log("ISBN sent to Google;", isbn);
 
-            let googleResponse = await fetch(
-                "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
-            );
+           let controller = new AbortController();
 
-            let googleData = await googleResponse.json();
+let timeout = setTimeout(() => {
+    controller.abort();
+}, 5000);
+
+let googleResponse = await fetch(
+    "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn,
+    { signal: controller.signal }
+);
+
+clearTimeout(timeout);
+
+let googleData = await googleResponse.json();
 
             console.log("Google Books:", googleData);
 
