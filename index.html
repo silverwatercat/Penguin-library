@@ -292,9 +292,9 @@ function cleanISBN(code) {
   const check = (10 - (sum % 10)) % 10;
   return isbn + check;
 }
-
-async function startScanner() {
-  stopScanner(); // clean previous session
+   async function startScanner() {
+  document.getElementById("scanResult").innerHTML = "";
+  stopScanner();
 
   document.getElementById("scanner").innerHTML =
     '<video id="camera" autoplay playsinline></video>';
@@ -365,17 +365,20 @@ async function lookupISBNNumber(isbn) {
       .replace(/"/g, "&quot;");
   }
 
-  function showBook(title, author, isbn) {
-    resultEl.innerHTML = `
-      <div class="book">
-        <b>${title}</b><br>
-        ${author}<br>
-        ISBN: ${isbn}<br><br>
-        <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
-          Add to Library
-        </button>
-      </div>`;
-  }
+function showBook(title, author, isbn) {
+  resultEl.innerHTML = `
+    <div class="book">
+      <b>${title}</b><br>
+      ${author}<br>
+      ISBN: ${isbn}<br><br>
+      <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
+        Add to Library
+      </button>
+      <button onclick="document.getElementById('scanResult').innerHTML=''" style="background:#666; margin-left:8px;">
+        Dismiss
+      </button>
+    </div>`;
+}
 
   function fetchWithTimeout(url, ms = 5000) {
     const controller = new AbortController();
@@ -501,6 +504,7 @@ function addScannedBook(title, author) {
 
   if (exists) {
     alert("This book is already in your library.");
+    document.getElementById("scanResult").innerHTML = "";
     return;
   }
 
@@ -508,7 +512,7 @@ function addScannedBook(title, author) {
   localStorage.setItem("penguinLibraryBooks", JSON.stringify(books));
 
   alert(title + " added!");
-  document.getElementById("scanResult").innerHTML = "";
+  document.getElementById("scanResult").innerHTML = "";  // ← clears the box
   render();
 }
 function showMainLibrary() {
