@@ -373,11 +373,9 @@ async function lookupISBNNumber(isbn) {
       </div>`;
   }
 
-  // Fetch with a hard timeout (default 5 seconds)
   function fetchWithTimeout(url, ms = 5000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ms);
-
     return fetch(url, { signal: controller.signal })
       .then(res => {
         clearTimeout(timer);
@@ -389,7 +387,36 @@ async function lookupISBNNumber(isbn) {
       });
   }
 
-  // --- 1. Google Books (usually fastest & most reliable) ---
+  // Resolve Open Library author keys → real names
+  async function resolveAuthorNames(authors) {
+    if (!authors || !authors.length) return "Unknown author";
+
+    // Already have names?
+    const names = authors.map(a => a.name).filter(Boolean);
+    if (names.length) return names.join(", ");
+
+    // Only keys like /authors/OL581728A — look them up
+    const namePromises = authors.slice(0, 3).map(async (a) => {
+      const key = a.key; // e.g. "/authors/OL581728A"
+      if (!key) return null;
+      try {
+        const res = await fetchWithTimeout(
+          "https://openlibrary.org" + key + ".json",
+          3000
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.name || data.personal_name || null;
+      } catch {
+        return null;
+      }
+    });
+
+    const resolved = (await Promise.all(namePromises)).filter(Boolean);
+    return resolved.length ? resolved.join(", ") : "Unknown author";
+  }
+
+  // --- 1. Google Books (usually best: real names + fast) ---
   try {
     resultEl.innerHTML = "Trying Google Books…";
     const res = await fetchWithTimeout(
@@ -406,10 +433,10 @@ async function lookupISBNNumber(isbn) {
       }
     }
   } catch (e) {
-    console.warn("Google Books failed/timeout:", e.name);
+    console.warn("Google Books failed:", e.name);
   }
 
-  // --- 2. Open Library search ---
+  // --- 2. Open Library search (also returns author_name) ---
   try {
     resultEl.innerHTML = "Trying Open Library…";
     const res = await fetchWithTimeout(
@@ -427,10 +454,10 @@ async function lookupISBNNumber(isbn) {
       }
     }
   } catch (e) {
-    console.warn("Open Library search failed/timeout:", e.name);
+    console.warn("Open Library search failed:", e.name);
   }
 
-  // --- 3. Open Library direct ISBN endpoint ---
+  // --- 3. Open Library /isbn/… (may only have author keys) ---
   try {
     resultEl.innerHTML = "Trying Open Library (direct)…";
     const res = await fetchWithTimeout(
@@ -439,26 +466,27 @@ async function lookupISBNNumber(isbn) {
     if (res.ok) {
       const data = await res.json();
       const title = data.title || "Unknown title";
+
       let author = "Unknown author";
       if (data.by_statement) {
         author = data.by_statement;
       } else if (data.authors && data.authors.length) {
-        author = data.authors.map(a => a.name || "").filter(Boolean).join(", ") || author;
+        author = await resolveAuthorNames(data.authors);
       }
+
       showBook(title, author, isbn);
       return;
     }
   } catch (e) {
-    console.warn("Open Library /isbn/ failed/timeout:", e.name);
+    console.warn("Open Library /isbn/ failed:", e.name);
   }
 
-  // Everything failed or timed out
+  // All failed
   resultEl.innerHTML = `
     <div class="book" style="border-color:#c00;">
       <b>Could not look up ISBN ${isbn}</b><br><br>
       All sources timed out or returned nothing.<br>
-      Open Library is often slow/down right now.<br><br>
-      You can still add the book manually, or try scanning again in a minute.
+      Try again in a minute, or add the book manually.
     </div>`;
 }
 
