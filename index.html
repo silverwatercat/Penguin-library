@@ -315,28 +315,15 @@ render();
 
 function cleanISBN(code){
 
-    let isbn = code.replace(/\D/g,'');
+    let isbn = code.toString().replace(/\D/g,'');
 
-    // ISBN-13
-    if(isbn.length === 13){
-        return isbn;
-    }
-
-    // ISBN-10 convert to ISBN-13
-    if(isbn.length === 10){
-        return "978" + isbn.substring(0,9);
-    }
-
-    // Some scanners return UPC-A (12 digits)
-    // Book UPCs usually start with 978 or 979 after conversion
-    if(isbn.length === 12){
-        return "978" + isbn.substring(0,11);
+    if(isbn.length > 13){
+        isbn = isbn.slice(-13);
     }
 
     return isbn;
 
 }
-let codeReader;
 async function startScanner(){
 
     document.getElementById("scanner").innerHTML =
