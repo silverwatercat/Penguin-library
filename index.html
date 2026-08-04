@@ -105,7 +105,7 @@ placeholder="Search title or author">
 
 <script>
 
-alert("VERSION TEST 10");
+alert("VERSION TEST 1");
 
 function debug(message){
     console.log(message);
@@ -459,6 +459,7 @@ async function lookupISBNNumber(isbn){
     clearTimeout(timeout);
 
     let data = await response.json();
+        alert(JSON.stringify(data));
 
     console.log("OpenLibrary:", data);
 
