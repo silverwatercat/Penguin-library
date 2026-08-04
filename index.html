@@ -354,7 +354,6 @@ async function lookupISBNNumber(isbn) {
 
   resultEl.innerHTML = "Looking up ISBN: " + isbn + " …";
 
-  // Helper to safely escape text for HTML attributes
   function escapeAttr(str) {
     return String(str)
       .replace(/\\/g, "\\\\")
@@ -362,55 +361,38 @@ async function lookupISBNNumber(isbn) {
       .replace(/"/g, "&quot;");
   }
 
-  // --- Source 1: Open Library search.json ---
-  try {
-    const res = await fetch(
-      "https://openlibrary.org/search.json?isbn=" + encodeURIComponent(isbn) +
-      "&fields=title,author_name,key"
-    );
-    if (res.ok) {
-      const data = await res.json();
-      if (data.docs && data.docs.length > 0) {
-        const doc = data.docs[0];
-        const title = doc.title || "Unknown title";
-        const author = doc.author_name ? doc.author_name.join(", ") : "Unknown author";
-        showBook(title, author, isbn);
-        return;
-      }
-    }
-  } catch (e) {
-    console.warn("OpenLibrary search failed:", e);
+  function showBook(title, author, isbn) {
+    resultEl.innerHTML = `
+      <div class="book">
+        <b>${title}</b><br>
+        ${author}<br>
+        ISBN: ${isbn}<br><br>
+        <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
+          Add to Library
+        </button>
+      </div>`;
   }
 
-  // --- Source 2: Open Library /isbn/{isbn}.json ---
-  try {
-    const res = await fetch(
-      "https://openlibrary.org/isbn/" + encodeURIComponent(isbn) + ".json"
-    );
-    if (res.ok) {
-      const data = await res.json();
-      const title = data.title || "Unknown title";
-      let author = "Unknown author";
+  // Fetch with a hard timeout (default 5 seconds)
+  function fetchWithTimeout(url, ms = 5000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
 
-      // authors are usually just keys; try to get names if present
-      if (data.authors && data.authors.length) {
-        // Sometimes names are already there, sometimes only keys
-        author = data.authors
-          .map(a => a.name || a.key || "")
-          .filter(Boolean)
-          .join(", ") || "Unknown author";
-      }
-
-      showBook(title, author, isbn);
-      return;
-    }
-  } catch (e) {
-    console.warn("OpenLibrary /isbn/ failed:", e);
+    return fetch(url, { signal: controller.signal })
+      .then(res => {
+        clearTimeout(timer);
+        return res;
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        throw err;
+      });
   }
 
-  // --- Source 3: Google Books (usually most reliable for browsers) ---
+  // --- 1. Google Books (usually fastest & most reliable) ---
   try {
-    const res = await fetch(
+    resultEl.innerHTML = "Trying Google Books…";
+    const res = await fetchWithTimeout(
       "https://www.googleapis.com/books/v1/volumes?q=isbn:" + encodeURIComponent(isbn)
     );
     if (res.ok) {
@@ -424,32 +406,60 @@ async function lookupISBNNumber(isbn) {
       }
     }
   } catch (e) {
-    console.warn("Google Books failed:", e);
+    console.warn("Google Books failed/timeout:", e.name);
   }
 
-  // All sources failed
+  // --- 2. Open Library search ---
+  try {
+    resultEl.innerHTML = "Trying Open Library…";
+    const res = await fetchWithTimeout(
+      "https://openlibrary.org/search.json?isbn=" + encodeURIComponent(isbn) +
+      "&fields=title,author_name&limit=1"
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.docs && data.docs.length > 0) {
+        const doc = data.docs[0];
+        const title = doc.title || "Unknown title";
+        const author = doc.author_name ? doc.author_name.join(", ") : "Unknown author";
+        showBook(title, author, isbn);
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn("Open Library search failed/timeout:", e.name);
+  }
+
+  // --- 3. Open Library direct ISBN endpoint ---
+  try {
+    resultEl.innerHTML = "Trying Open Library (direct)…";
+    const res = await fetchWithTimeout(
+      "https://openlibrary.org/isbn/" + encodeURIComponent(isbn) + ".json"
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const title = data.title || "Unknown title";
+      let author = "Unknown author";
+      if (data.by_statement) {
+        author = data.by_statement;
+      } else if (data.authors && data.authors.length) {
+        author = data.authors.map(a => a.name || "").filter(Boolean).join(", ") || author;
+      }
+      showBook(title, author, isbn);
+      return;
+    }
+  } catch (e) {
+    console.warn("Open Library /isbn/ failed/timeout:", e.name);
+  }
+
+  // Everything failed or timed out
   resultEl.innerHTML = `
     <div class="book" style="border-color:#c00;">
       <b>Could not look up ISBN ${isbn}</b><br><br>
-      Possible reasons:<br>
-      • Open Library is temporarily down<br>
-      • Network / CORS issue (try serving the page over http://localhost instead of file://)<br>
-      • The barcode is not a standard book ISBN<br><br>
-      You can still add the book manually by typing the title in the search box
-      (or just wait a few minutes and try scanning again).
+      All sources timed out or returned nothing.<br>
+      Open Library is often slow/down right now.<br><br>
+      You can still add the book manually, or try scanning again in a minute.
     </div>`;
-
-  function showBook(title, author, isbn) {
-    resultEl.innerHTML = `
-      <div class="book">
-        <b>${title}</b><br>
-        ${author}<br>
-        ISBN: ${isbn}<br><br>
-        <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
-          Add to Library
-        </button>
-      </div>`;
-  }
 }
 
 function addScannedBook(title, author) {
