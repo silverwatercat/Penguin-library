@@ -69,10 +69,14 @@ video{
 <input id="search" class="search" placeholder="Search title or author">
 
 <button onclick="startScanner()">📷 Scan Book</button>
+<button onclick="startScanner()">📷 Scan Book</button>
+<button onclick="showMainLibrary()">📚 Library</button>
+<button onclick="showArchive()">📦 Archive</button>
 
 <div id="scanResult"></div>
 <div id="scanner"></div>
 <div id="books"></div>
+<div id="archive" style="display:none;"></div>
 
 <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
 
@@ -508,7 +512,68 @@ function addScannedBook(title, author) {
   document.getElementById("scanResult").innerHTML = "";
   render();
 }
+function showMainLibrary() {
+  document.getElementById("books").style.display = "block";
+  document.getElementById("archive").style.display = "none";
+  document.getElementById("search").style.display = "block";
+  render();
+}
 
+function showArchive() {
+  document.getElementById("books").style.display = "none";
+  document.getElementById("archive").style.display = "block";
+  document.getElementById("search").style.display = "none";
+  renderArchive();
+}
+
+function renderArchive() {
+  const area = document.getElementById("archive");
+  area.innerHTML = "";
+
+  if (archivedBooks.length === 0) {
+    area.innerHTML = "<p>No books in the archive.</p>";
+    return;
+  }
+
+  area.innerHTML = `<div class="stats">Archived: ${archivedBooks.length}</div>`;
+
+  archivedBooks.forEach((book, index) => {
+    area.innerHTML += `
+      <div class="book">
+        <b>${book[0]}</b>
+        <div class="author">${book[1]}</div>
+
+        <button onclick="restoreBook(${index})" style="margin-top:8px; margin-right:8px;">
+          Restore to Library
+        </button>
+        <button onclick="deleteArchivedBook(${index})" style="background:#a33;">
+          Delete Forever
+        </button>
+      </div>`;
+  });
+}
+
+function restoreBook(index) {
+  if (!confirm("Move this book back to your library?")) return;
+
+  books.push(archivedBooks[index]);
+  archivedBooks.splice(index, 1);
+
+  localStorage.setItem("penguinLibraryBooks", JSON.stringify(books));
+  localStorage.setItem("penguinArchivedBooks", JSON.stringify(archivedBooks));
+
+  renderArchive();
+  // optional: switch back to main library
+  // showMainLibrary();
+}
+
+function deleteArchivedBook(index) {
+  if (!confirm("Permanently delete this book? This cannot be undone.")) return;
+
+  archivedBooks.splice(index, 1);
+  localStorage.setItem("penguinArchivedBooks", JSON.stringify(archivedBooks));
+  renderArchive();
+}
 document.getElementById("search").addEventListener("input", render);
 render();
 </script>
