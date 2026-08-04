@@ -104,7 +104,7 @@ placeholder="Search title or author">
 <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
 
 <script>
-let codereader;
+let codeReader;
     
 let books = JSON.parse(
 localStorage.getItem("penguinLibraryBooks")
@@ -322,9 +322,33 @@ function cleanISBN(code){
         return isbn;
     }
 
-    if(isbn.length === 10){
-        return "978" + isbn.substring(0,9);
+    function cleanISBN(code){
+
+    let isbn = code.toString().replace(/\D/g,'');
+
+    if(isbn.length === 13){
+        return isbn;
     }
+
+    if(isbn.length === 10){
+        isbn = "978" + isbn.substring(0,9);
+
+        let sum = 0;
+
+        for(let i = 0; i < isbn.length; i++){
+
+            sum += (i % 2 === 0)
+                ? Number(isbn[i])
+                : Number(isbn[i]) * 3;
+
+        }
+
+        return isbn + ((10 - (sum % 10)) % 10);
+    }
+
+    return isbn;
+
+}
 
     return isbn;
 
