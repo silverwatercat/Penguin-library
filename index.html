@@ -318,8 +318,8 @@ function cleanISBN(code){
 
     let isbn = code.replace(/\D/g,'');
 
-    if(isbn.length === 12 && isbn.startsWith("0")){
-        isbn = "978" + isbn.substring(1);
+    if(isbn.length > 13){
+        isbn = isbn.slice(-13);
     }
 
     return isbn;
@@ -406,62 +406,107 @@ async function lookupISBNNumber(isbn){
 
     try {
 
-        console.log("LOOKING UP ISBN:", isbn);
+        let title = "";
+        let author = "";
 
+        // Try OpenLibrary first
         let response = await fetch(
-            "https://openlibrary.org/search.json?isbn=" + isbn
+            "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data"
         );
 
         let data = await response.json();
 
-        console.log("OpenLibrary result:", data);
+        console.log("OpenLibrary:", data);
 
-        if(!data.docs || data.docs.length === 0){
-            throw new Error("Book not found");
+        let book = data["ISBN:" + isbn];
+
+
+        if(book){
+
+            title = book.title;
+
+            if(book.authors && book.authors.length){
+
+                author = book.authors[0].name || "";
+
+            }
+
         }
 
-        let book = data.docs[0];
 
-        let title = book.title || "Unknown title";
+        // If OpenLibrary failed, try Google Books
+        if(!title){
 
-        let author = "Unknown author";
+            console.log("Trying Google Books...");
 
-        if(book.author_name && book.author_name.length){
-            author = book.author_name[0];
+            let googleResponse = await fetch(
+                "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
+            );
+
+            let googleData = await googleResponse.json();
+
+            console.log("Google Books:", googleData);
+
+
+            if(googleData.totalItems > 0){
+
+                let info = googleData.items[0].volumeInfo;
+
+                title = info.title || "";
+
+                author = info.authors 
+                    ? info.authors.join(", ")
+                    : "";
+
+            }
+
+        }
+
+
+        if(!title){
+
+            throw new Error("Book not found");
+
         }
 
 
         result.innerHTML = `
         <div class="book">
+
             <b>${title}</b>
             <br>
-            ${author}
+            ${author || "Unknown author"}
             <br>
             ISBN: ${isbn}
+
             <br><br>
 
             <button onclick="addScannedBook(
             '${title.replace(/'/g,"\\'")}',
             '${author.replace(/'/g,"\\'")}'
             )">
+
             Add to Library
+
             </button>
 
         </div>
         `;
 
+
     }
 
     catch(error){
 
-        console.error(error);
-
         result.innerHTML =
         "Lookup error: " + error.message;
+
+        console.log(error);
 
     }
 
 }
+
 function addScannedBook(title,author){
 
 
