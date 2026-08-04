@@ -444,35 +444,37 @@ async function lookupISBNNumber(isbn){
         let title = "";
         let author = "";
 
-    
-// Try OpenLibrary first
-try {
+    try {
 
-   let controller = new AbortController();
+    let controller = new AbortController();
 
-let timeout = setTimeout(() => {
-    controller.abort();
-}, 5000);
+    let timeout = setTimeout(() => {
+        controller.abort();
+    }, 5000);
 
-let response = await fetch(
-    "https://openlibrary.org/search.json?isbn=" + isbn,
-    { signal: controller.signal }
-);
+    let response = await fetch(
+        "https://openlibrary.org/search.json?isbn=" + isbn,
+        { signal: controller.signal }
+    );
 
-clearTimeout(timeout);
+    clearTimeout(timeout);
 
-   let data = await response.json();
+    let data = await response.json();
 
-alert("OpenLibrary found: " + data.numFound + 
-"\nTitle: " + (data.docs[0]?.title || "none"));
+    console.log("OpenLibrary:", data);
 
     if(data.docs && data.docs.length){
 
-        title = data.docs[0].title || "";
+        title = data.docs[0].title || "NO TITLE";
+        author = data.docs[0].author_name
+            ? data.docs[0].author_name.join(", ")
+            : "Unknown";
 
-        if(data.docs[0].author_name){
-            author = data.docs[0].author_name.join(", ");
-        }
+        alert("OPENLIBRARY SET TITLE: " + title);
+
+    } else {
+
+        alert("OpenLibrary returned no docs");
 
     }
 
