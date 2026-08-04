@@ -367,22 +367,39 @@ async function lookupISBNNumber(isbn) {
       .replace(/'/g, "\\'")
       .replace(/"/g, "&quot;");
   }
-
 function showBook(title, author, isbn) {
+  const alreadyInLibrary = books.some(
+    b => b[0].toLowerCase() === title.toLowerCase()
+  );
+
+  let actionButton;
+
+  if (alreadyInLibrary) {
+    actionButton = `
+      <button style="background:#666; cursor:default;" disabled>
+        Already in Library
+      </button>`;
+  } else {
+    actionButton = `
+      <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
+        Add to Library
+      </button>`;
+  }
+
   resultEl.innerHTML = `
     <div class="book">
       <b>${title}</b><br>
       ${author}<br>
       ISBN: ${isbn}<br><br>
-      <button onclick="addScannedBook('${escapeAttr(title)}', '${escapeAttr(author)}')">
-        Add to Library
-      </button>
+      ${alreadyInLibrary
+        ? '<div style="color:#2a7; font-weight:bold; margin-bottom:8px;">✓ This book is already in your library</div>'
+        : '<div style="color:#a50; font-weight:bold; margin-bottom:8px;">Not in your library yet</div>'}
+      ${actionButton}
       <button onclick="document.getElementById('scanResult').innerHTML=''" style="background:#666; margin-left:8px;">
         Dismiss
       </button>
     </div>`;
 }
-
   function fetchWithTimeout(url, ms = 5000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ms);
