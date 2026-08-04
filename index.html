@@ -105,7 +105,7 @@ placeholder="Search title or author">
 
 <script>
 
-alert("VERSION TEST bb");
+alert("VERSION TEST 10");
 
 function debug(message){
     console.log(message);
@@ -485,8 +485,12 @@ catch(error){
     console.log("OpenLibrary failed", error);
 
 }
-alert("BEFORE DISPLAY TITLE: " + " | AUTHOR: " + author);
-     result.innerHTML = `
+        if(!title){
+            alert("NO TITLE AFTER OPENLIBRARY");
+            return;
+        }
+alert("BEFORE DISPLAY TITLE: " + title + " | AUTHOR: " + author);
+        result.innerHTML = `
         <div class="book">
 
             <b>${title}</b>
