@@ -450,10 +450,10 @@ catch(error){
 
 
         // If OpenLibrary failed, try Google Books
-        if(!title){
+      if(!title){
 
-            console.log("Trying Google Books...");
-
+    console.log("Trying Google Books...");
+    result.innerHTML = "Trying Google Books...";
             let googleResponse = await fetch(
                 "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
             );
