@@ -426,7 +426,7 @@ async function lookupISBNNumber(isbn){
 
     let result = document.getElementById("scanResult");
 
-    result.innerHTML = "Looking up ISBN: " + isbn;
+    result.innerHTML = "SCANNED NUMBER: " + isbn;
     if(!isbn){
     result.innerHTML = "Invalid barcode - no ISBN detected";
     return;
