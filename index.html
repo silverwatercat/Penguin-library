@@ -322,11 +322,14 @@ function cleanISBN(code){
 
     let isbn = code.toString().replace(/\D/g,'');
 
+    // ISBN-13
     if(isbn.length === 13){
         return isbn;
     }
 
-      if(isbn.length === 10){
+    // ISBN-10
+    if(isbn.length === 10){
+
         isbn = "978" + isbn.substring(0,9);
 
         let sum = 0;
@@ -336,14 +339,29 @@ function cleanISBN(code){
             sum += (i % 2 === 0)
                 ? Number(isbn[i])
                 : Number(isbn[i]) * 3;
-
         }
 
         return isbn + ((10 - (sum % 10)) % 10);
     }
 
-    return isbn;
+    // UPC-A books often start with 978 after conversion
+    if(isbn.length === 12){
 
+        isbn = "978" + isbn.substring(0,9);
+
+        let sum = 0;
+
+        for(let i = 0; i < isbn.length; i++){
+
+            sum += (i % 2 === 0)
+                ? Number(isbn[i])
+                : Number(isbn[i]) * 3;
+        }
+
+        return isbn + ((10 - (sum % 10)) % 10);
+    }
+
+    return "";
 }
 async function startScanner(){
 
