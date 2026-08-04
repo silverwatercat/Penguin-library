@@ -3,22 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Penguin Library</title>
-
 <style>
-
 body{
     font-family:Georgia,serif;
     background:#f7f3ea;
     margin:20px;
     color:#222;
 }
-
-h1{
-    text-align:center;
-}
-
+h1{ text-align:center; }
 .search{
     width:100%;
     padding:12px;
@@ -28,7 +21,6 @@ h1{
     margin-bottom:12px;
     box-sizing:border-box;
 }
-
 button{
     padding:10px 18px;
     border:none;
@@ -37,17 +29,13 @@ button{
     color:white;
     font-size:16px;
     cursor:pointer;
+    margin-right:8px;
 }
-
-button:hover{
-    background:#555;
-}
-
+button:hover{ background:#555; }
 .stats{
     margin:15px 0;
     font-weight:bold;
 }
-
 .book{
     background:white;
     border:1px solid #ddd;
@@ -55,563 +43,375 @@ button:hover{
     padding:12px;
     margin-bottom:12px;
 }
-
 .author{
     color:#666;
     margin-bottom:8px;
 }
-
 label{
     display:block;
     margin-top:6px;
 }
-
 video{
     width:100%;
     max-width:400px;
     border-radius:8px;
     margin-top:15px;
 }
-
-#scanResult{
-    margin-top:15px;
-}
-
+#scanResult{ margin-top:15px; }
 </style>
-
 </head>
-
 <body>
 
 <h1>📚 Penguin Library</h1>
 
 <div id="stats" class="stats"></div>
 
-<input
-id="search"
-class="search"
-placeholder="Search title or author">
+<input id="search" class="search" placeholder="Search title or author">
 
 <button onclick="startScanner()">📷 Scan Book</button>
-
+<button onclick="stopScanner()">⏹ Stop Scanner</button>
 
 <div id="scanResult"></div>
-
 <div id="scanner"></div>
-
 <div id="books"></div>
 
 <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
 
 <script>
+let codeReader = null;
 
-alert("VERSION TEST o");
-
-function debug(message){
-    console.log(message);
-}
-
-let codeReader;
-    
-let storedBooks = JSON.parse(
-    localStorage.getItem("penguinLibraryBooks") || "null"
-);
-
-let books = storedBooks || [
-
-["The Odyssey","Homer"],
-["The Iliad","Homer"],
-["The Aeneid","Virgil"],
-["The Divine Comedy","Dante Alighieri"],
-["The Decameron","Giovanni Boccaccio"],
-["The Canterbury Tales","Geoffrey Chaucer"],
-["Don Quixote","Miguel de Cervantes"],
-["Pride and Prejudice","Jane Austen"],
-["Sense and Sensibility","Jane Austen"],
-["Emma","Jane Austen"],
-["Jane Eyre","Charlotte Brontë"],
-["Wuthering Heights","Emily Brontë"],
-["Great Expectations","Charles Dickens"],
-["Bleak House","Charles Dickens"],
-["David Copperfield","Charles Dickens"],
-["A Tale of Two Cities","Charles Dickens"],
-["Oliver Twist","Charles Dickens"],
-["Middlemarch","George Eliot"],
-["The Picture of Dorian Gray","Oscar Wilde"],
-["Dracula","Bram Stoker"],
-["Frankenstein","Mary Shelley"],
-["The Time Machine","H.G. Wells"],
-["The War of the Worlds","H.G. Wells"],
-["The Strange Case of Dr Jekyll and Mr Hyde","Robert Louis Stevenson"],
-["Treasure Island","Robert Louis Stevenson"],
-["The Adventures of Sherlock Holmes","Arthur Conan Doyle"],
-["The Great Gatsby","F. Scott Fitzgerald"],
-["Tender Is the Night","F. Scott Fitzgerald"],
-["The Grapes of Wrath","John Steinbeck"],
-["East of Eden","John Steinbeck"],
-["Of Mice and Men","John Steinbeck"],
-["1984","George Orwell"],
-["Animal Farm","George Orwell"],
-["Brave New World","Aldous Huxley"],
-["The Sun Also Rises","Ernest Hemingway"],
-["A Farewell to Arms","Ernest Hemingway"],
-["The Old Man and the Sea","Ernest Hemingway"],
-["Crime and Punishment","Fyodor Dostoevsky"],
-["The Brothers Karamazov","Fyodor Dostoevsky"],
-["Notes from Underground","Fyodor Dostoevsky"],
-["The Idiot","Fyodor Dostoevsky"],
-["Anna Karenina","Leo Tolstoy"],
-["War and Peace","Leo Tolstoy"],
-["The Death of Ivan Ilyich","Leo Tolstoy"],
-["The Master and Margarita","Mikhail Bulgakov"],
-["Fathers and Sons","Ivan Turgenev"],
-["Madame Bovary","Gustave Flaubert"],
-["Les Misérables","Victor Hugo"],
-["The Hunchback of Notre-Dame","Victor Hugo"],
-["The Count of Monte Cristo","Alexandre Dumas"],
-["The Three Musketeers","Alexandre Dumas"],
-["The Stranger","Albert Camus"],
-["The Plague","Albert Camus"],
-["Nausea","Jean-Paul Sartre"],
-["Candide","Voltaire"],
-["The Republic","Plato"],
-["Symposium","Plato"],
-["Meditations","Marcus Aurelius"],
-["The Prince","Niccolò Machiavelli"],
-["The Art of War","Sun Tzu"],
-["The Confessions","Saint Augustine"],
-["The Analects","Confucius"],
-["Walden","Henry David Thoreau"],
-["Civil Disobedience","Henry David Thoreau"],
-["The Scarlet Letter","Nathaniel Hawthorne"],
-["Moby-Dick","Herman Melville"],
-["The Call of the Wild","Jack London"],
-["The Jungle","Upton Sinclair"],
-["The Awakening","Kate Chopin"],
-["A Room of One's Own","Virginia Woolf"],
-["To the Lighthouse","Virginia Woolf"],
-["Mrs Dalloway","Virginia Woolf"],
-["The Metamorphosis","Franz Kafka"],
-["The Trial","Franz Kafka"],
-["The Castle","Franz Kafka"],
-["The Little Prince","Antoine de Saint-Exupéry"],
-["Robinson Crusoe","Daniel Defoe"],
-["Gulliver's Travels","Jonathan Swift"],
-["The Importance of Being Earnest","Oscar Wilde"],
-["The Waste Land","T.S. Eliot"],
-["Selected Poems","Emily Dickinson"],
-["Leaves of Grass","Walt Whitman"],
-["The Portable Nietzsche","Friedrich Nietzsche"],
-["Thus Spoke Zarathustra","Friedrich Nietzsche"],
-["Beyond Good and Evil","Friedrich Nietzsche"],
-["The Interpretation of Dreams","Sigmund Freud"],
-["The Origin of Species","Charles Darwin"],
-["The Communist Manifesto","Karl Marx"],
-["The Autobiography of Malcolm X","Malcolm X"],
-["A Passage to India","E.M. Forster"],
-["Howards End","E.M. Forster"],
-["The Good Soldier","Ford Madox Ford"],
-["The Age of Innocence","Edith Wharton"],
-["The House of Mirth","Edith Wharton"],
-["The Bell Jar","Sylvia Plath"],
-["The Complete Stories","Flannery O'Connor"],
-["One Hundred Years of Solitude","Gabriel García Márquez"],
-["Love in the Time of Cholera","Gabriel García Márquez"],
-["The Master and Margarita","Mikhail Bulgakov"]
-
+let books = JSON.parse(localStorage.getItem("penguinLibraryBooks")) || [
+  ["The Odyssey","Homer"],
+  ["The Iliad","Homer"],
+  ["The Aeneid","Virgil"],
+  ["The Divine Comedy","Dante Alighieri"],
+  ["The Decameron","Giovanni Boccaccio"],
+  ["The Canterbury Tales","Geoffrey Chaucer"],
+  ["Don Quixote","Miguel de Cervantes"],
+  ["Pride and Prejudice","Jane Austen"],
+  ["Sense and Sensibility","Jane Austen"],
+  ["Emma","Jane Austen"],
+  ["Jane Eyre","Charlotte Brontë"],
+  ["Wuthering Heights","Emily Brontë"],
+  ["Great Expectations","Charles Dickens"],
+  ["Bleak House","Charles Dickens"],
+  ["David Copperfield","Charles Dickens"],
+  ["A Tale of Two Cities","Charles Dickens"],
+  ["Oliver Twist","Charles Dickens"],
+  ["Middlemarch","George Eliot"],
+  ["The Picture of Dorian Gray","Oscar Wilde"],
+  ["Dracula","Bram Stoker"],
+  ["Frankenstein","Mary Shelley"],
+  ["The Time Machine","H.G. Wells"],
+  ["The War of the Worlds","H.G. Wells"],
+  ["The Strange Case of Dr Jekyll and Mr Hyde","Robert Louis Stevenson"],
+  ["Treasure Island","Robert Louis Stevenson"],
+  ["The Adventures of Sherlock Holmes","Arthur Conan Doyle"],
+  ["The Great Gatsby","F. Scott Fitzgerald"],
+  ["Tender Is the Night","F. Scott Fitzgerald"],
+  ["The Grapes of Wrath","John Steinbeck"],
+  ["East of Eden","John Steinbeck"],
+  ["Of Mice and Men","John Steinbeck"],
+  ["1984","George Orwell"],
+  ["Animal Farm","George Orwell"],
+  ["Brave New World","Aldous Huxley"],
+  ["The Sun Also Rises","Ernest Hemingway"],
+  ["A Farewell to Arms","Ernest Hemingway"],
+  ["The Old Man and the Sea","Ernest Hemingway"],
+  ["Crime and Punishment","Fyodor Dostoevsky"],
+  ["The Brothers Karamazov","Fyodor Dostoevsky"],
+  ["Notes from Underground","Fyodor Dostoevsky"],
+  ["The Idiot","Fyodor Dostoevsky"],
+  ["Anna Karenina","Leo Tolstoy"],
+  ["War and Peace","Leo Tolstoy"],
+  ["The Death of Ivan Ilyich","Leo Tolstoy"],
+  ["The Master and Margarita","Mikhail Bulgakov"],
+  ["Fathers and Sons","Ivan Turgenev"],
+  ["Madame Bovary","Gustave Flaubert"],
+  ["Les Misérables","Victor Hugo"],
+  ["The Hunchback of Notre-Dame","Victor Hugo"],
+  ["The Count of Monte Cristo","Alexandre Dumas"],
+  ["The Three Musketeers","Alexandre Dumas"],
+  ["The Stranger","Albert Camus"],
+  ["The Plague","Albert Camus"],
+  ["Nausea","Jean-Paul Sartre"],
+  ["Candide","Voltaire"],
+  ["The Republic","Plato"],
+  ["Symposium","Plato"],
+  ["Meditations","Marcus Aurelius"],
+  ["The Prince","Niccolò Machiavelli"],
+  ["The Art of War","Sun Tzu"],
+  ["The Confessions","Saint Augustine"],
+  ["The Analects","Confucius"],
+  ["Walden","Henry David Thoreau"],
+  ["Civil Disobedience","Henry David Thoreau"],
+  ["The Scarlet Letter","Nathaniel Hawthorne"],
+  ["Moby-Dick","Herman Melville"],
+  ["The Call of the Wild","Jack London"],
+  ["The Jungle","Upton Sinclair"],
+  ["The Awakening","Kate Chopin"],
+  ["A Room of One's Own","Virginia Woolf"],
+  ["To the Lighthouse","Virginia Woolf"],
+  ["Mrs Dalloway","Virginia Woolf"],
+  ["The Metamorphosis","Franz Kafka"],
+  ["The Trial","Franz Kafka"],
+  ["The Castle","Franz Kafka"],
+  ["The Little Prince","Antoine de Saint-Exupéry"],
+  ["Robinson Crusoe","Daniel Defoe"],
+  ["Gulliver's Travels","Jonathan Swift"],
+  ["The Importance of Being Earnest","Oscar Wilde"],
+  ["The Waste Land","T.S. Eliot"],
+  ["Selected Poems","Emily Dickinson"],
+  ["Leaves of Grass","Walt Whitman"],
+  ["The Portable Nietzsche","Friedrich Nietzsche"],
+  ["Thus Spoke Zarathustra","Friedrich Nietzsche"],
+  ["Beyond Good and Evil","Friedrich Nietzsche"],
+  ["The Interpretation of Dreams","Sigmund Freud"],
+  ["The Origin of Species","Charles Darwin"],
+  ["The Communist Manifesto","Karl Marx"],
+  ["The Autobiography of Malcolm X","Malcolm X"],
+  ["A Passage to India","E.M. Forster"],
+  ["Howards End","E.M. Forster"],
+  ["The Good Soldier","Ford Madox Ford"],
+  ["The Age of Innocence","Edith Wharton"],
+  ["The House of Mirth","Edith Wharton"],
+  ["The Bell Jar","Sylvia Plath"],
+  ["The Complete Stories","Flannery O'Connor"],
+  ["One Hundred Years of Solitude","Gabriel García Márquez"],
+  ["Love in the Time of Cholera","Gabriel García Márquez"]
 ];
 
-let saved = JSON.parse(
-localStorage.getItem("penguinLibrary") || "{}"
-);
+let saved = JSON.parse(localStorage.getItem("penguinLibrary") || "{}");
+let archivedBooks = JSON.parse(localStorage.getItem("penguinArchivedBooks") || "[]");
 
-let archivedBooks = JSON.parse(
-localStorage.getItem("penguinArchivedBooks") || "[]"
-);
-function render(){
+function render() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const area = document.getElementById("books");
+  area.innerHTML = "";
 
-    let search =
-        document.getElementById("search").value.toLowerCase();
+  let owned = 0, read = 0, wishlist = 0;
 
-    let area =
-        document.getElementById("books");
+  books.forEach((book, index) => {
+    if (saved[index]?.owned) owned++;
+    if (saved[index]?.read) read++;
+    if (saved[index]?.wishlist) wishlist++;
 
-    area.innerHTML="";
+    const text = (book[0] + " " + book[1]).toLowerCase();
+    if (!text.includes(search)) return;
 
-    let owned=0;
-    let read=0;
-    let wishlist=0;
+    area.innerHTML += `
+      <div class="book">
+        <b>${index + 1}. ${book[0]}</b>
+        <div class="author">${book[1]}</div>
 
-    books.forEach((book,index)=>{
+        <label>
+          <input type="checkbox" ${saved[index]?.owned ? "checked" : ""}
+                 onchange="updateBook(${index},'owned')">
+          I own this
+        </label>
 
-        if(saved[index]?.owned) owned++;
-        if(saved[index]?.read) read++;
-        if(saved[index]?.wishlist) wishlist++;
+        <label>
+          <input type="checkbox" ${saved[index]?.read ? "checked" : ""}
+                 onchange="updateBook(${index},'read')">
+          I have read this
+        </label>
 
-        let text =
-            (book[0]+" "+book[1]).toLowerCase();
+        <label>
+          <input type="checkbox" ${saved[index]?.wishlist ? "checked" : ""}
+                 onchange="updateBook(${index},'wishlist')">
+          Wishlist
+        </label>
 
-        if(text.includes(search)){
+        <label>
+          <input type="checkbox" onchange="archiveBook(${index})">
+          Archive this book
+        </label>
+      </div>`;
+  });
 
-            area.innerHTML+=`
-
-<div class="book">
-
-<b>${index+1}. ${book[0]}</b>
-
-<div class="author">${book[1]}</div>
-
-<label>
-<input type="checkbox"
-${saved[index]?.owned?"checked":""}
-onchange="updateBook(${index},'owned')">
-I own this
-</label>
-
-<label>
-<input type="checkbox"
-${saved[index]?.read?"checked":""}
-onchange="updateBook(${index},'read')">
-I have read this
-</label>
-
-<label>
-<input type="checkbox"
-${saved[index]?.wishlist?"checked":""}
-onchange="updateBook(${index},'wishlist')">
-Wishlist
-</label>
-<label>
-<input type="checkbox"
-onchange="archiveBook(${index})">
-Archive this book
-</label>
-
-</div>
-
-`;
-
-        }
-
-    });
-
-    document.getElementById("stats").innerHTML =
-        `Owned: ${owned} | Read: ${read} | Wishlist: ${wishlist} | Total: ${books.length}`;
-
-}
-    function updateBook(index,type){
-
-    if(!saved[index]){
-        saved[index]={};
-    }
-
-    saved[index][type]=!saved[index][type];
-
-    localStorage.setItem(
-        "penguinLibrary",
-        JSON.stringify(saved)
-    );
-
-    render();
+  document.getElementById("stats").innerHTML =
+    `Owned: ${owned} | Read: ${read} | Wishlist: ${wishlist} | Total: ${books.length}`;
 }
 
+function updateBook(index, type) {
+  if (!saved[index]) saved[index] = {};
+  saved[index][type] = !saved[index][type];
+  localStorage.setItem("penguinLibrary", JSON.stringify(saved));
+  render();
+}
 
-document
-.getElementById("search")
-.addEventListener("input",render);
+function rekeySavedAfterRemoval(removedIndex) {
+  const newSaved = {};
+  Object.keys(saved).forEach(key => {
+    const i = Number(key);
+    if (i < removedIndex) newSaved[i] = saved[i];
+    else if (i > removedIndex) newSaved[i - 1] = saved[i];
+  });
+  saved = newSaved;
+  localStorage.setItem("penguinLibrary", JSON.stringify(saved));
+}
 
+function archiveBook(index) {
+  if (!confirm("Move this book to the archive?")) return;
 
-render();
+  archivedBooks.push(books[index]);
+  books.splice(index, 1);
 
-function cleanISBN(code){
+  localStorage.setItem("penguinArchivedBooks", JSON.stringify(archivedBooks));
+  localStorage.setItem("penguinLibraryBooks", JSON.stringify(books));
 
-    let isbn = code.toString().replace(/\D/g,'');
+  rekeySavedAfterRemoval(index);
+  render();
+}
 
-    // ISBN-13
-    if(isbn.length === 13){
-        return isbn;
-    }
+function cleanISBN(code) {
+  let isbn = String(code).replace(/\D/g, "");
 
-    // ISBN-10
-    if(isbn.length === 10){
+  if (isbn.length === 13) return isbn;
 
-        isbn = "978" + isbn.substring(0,9);
-
-        let sum = 0;
-
-        for(let i = 0; i < isbn.length; i++){
-
-            sum += (i % 2 === 0)
-                ? Number(isbn[i])
-                : Number(isbn[i]) * 3;
-        }
-
-        return isbn + ((10 - (sum % 10)) % 10);
-    }
-
-    // UPC-A books often start with 978 after conversion
-    if(isbn.length === 12){
-
-        isbn = "978" + isbn.substring(0,9);
-
-        let sum = 0;
-
-        for(let i = 0; i < isbn.length; i++){
-
-            sum += (i % 2 === 0)
-                ? Number(isbn[i])
-                : Number(isbn[i]) * 3;
-        }
-
-        return isbn + ((10 - (sum % 10)) % 10);
-    }
-
+  // Convert ISBN-10 → ISBN-13
+  if (isbn.length === 10) {
+    isbn = "978" + isbn.substring(0, 9);
+  }
+  // Some UPC-A book barcodes are 12 digits
+  else if (isbn.length === 12) {
+    isbn = "978" + isbn.substring(0, 9);
+  } else {
     return "";
-}
-async function startScanner(){
+  }
 
-    document.getElementById("scanner").innerHTML =
+  // Calculate check digit
+  let sum = 0;
+  for (let i = 0; i < 12; i++) {
+    sum += (i % 2 === 0) ? Number(isbn[i]) : Number(isbn[i]) * 3;
+  }
+  const check = (10 - (sum % 10)) % 10;
+  return isbn + check;
+}
+
+async function startScanner() {
+  stopScanner(); // clean previous session
+
+  document.getElementById("scanner").innerHTML =
     '<video id="camera" autoplay playsinline></video>';
+  document.getElementById("scanResult").innerHTML = "Starting camera…";
 
-    document.getElementById("scanResult").innerHTML =
-    "Starting scanner...";
+  const video = document.getElementById("camera");
 
-    const video = document.getElementById("camera");
+  try {
+    codeReader = new ZXing.BrowserMultiFormatReader();
 
-    try {
-
-        codeReader = new ZXing.BrowserMultiFormatReader();
-
-       await codeReader.decodeFromConstraints(
-    {
+    await codeReader.decodeFromConstraints(
+      {
         video: {
-           facingMode: { ideal: "environment" },
-width: { ideal: 1920 },
-height: { ideal: 1080 }
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
         }
-    },
-            video,
-            (result, error) => {
-if(result){
+      },
+      video,
+      (result, err) => {
+        if (result) {
+          const raw = result.text;
+          const isbn = cleanISBN(raw);
+          console.log("Raw:", raw, "→ ISBN:", isbn);
 
-    let raw = result.text;
+          stopScanner();
+          lookupISBNNumber(isbn);
+        }
+        // ignore NotFoundException (normal while scanning)
+      }
+    );
 
-let isbn = cleanISBN(raw);
-
-console.log("Raw barcode:", raw);
-console.log("Clean ISBN:", isbn);
-
-    stopScanner();
-
-    lookupISBNNumber(isbn);
-
+    document.getElementById("scanResult").innerHTML = "Point camera at barcode…";
+  } catch (error) {
+    console.error(error);
+    document.getElementById("scanResult").innerHTML =
+      "Camera error: " + error.message;
+  }
 }
-});
+
+function stopScanner() {
+  if (codeReader) {
+    try { codeReader.reset(); } catch (e) {}
+    codeReader = null;
+  }
+
+  const video = document.getElementById("camera");
+  if (video && video.srcObject) {
+    video.srcObject.getTracks().forEach(t => t.stop());
+  }
+  document.getElementById("scanner").innerHTML = "";
 }
-catch(error){
-    console.log(error);
-}
-}
-function stopScanner(){
 
-    if(codeReader){
-        codeReader.reset();
-    }
+async function lookupISBNNumber(isbn) {
+  const resultEl = document.getElementById("scanResult");
 
-    let video = document.getElementById("camera");
-
-    if(video && video.srcObject){
-        video.srcObject.getTracks().forEach(track => track.stop());
-    }
-
-    document.getElementById("scanner").innerHTML="";
-
-}
-async function lookupISBNNumber(isbn){
-    
-    let result = document.getElementById("scanResult");
-
-    result.innerHTML = "SCANNED NUMBER: " + isbn;
-    if(!isbn){
-    result.innerHTML = "Invalid barcode - no ISBN detected";
+  if (!isbn) {
+    resultEl.innerHTML = "Invalid barcode – no ISBN detected";
     return;
-}
+  }
 
-    try {
+  resultEl.innerHTML = "Looking up ISBN: " + isbn + " …";
 
-        let title = "";
-        let author = "";
-
-    try {
-
-let response;
-
-for(let attempt = 1; attempt <= 3; attempt++){
-
-    try {
-
-        response = await fetch(
-            "https://openlibrary.org/search.json?isbn=" + isbn
-        );
-
-        if(response.ok){
-            break;
-        }
-
-    }
-    catch(error){
-
-        console.log("Attempt failed:", attempt);
-
-        if(attempt === 3){
-            throw error;
-        }
-
-    }
-
-}
-
-    let data = await response.json();
-
-    console.log("OpenLibrary:", data);
-
-    if(data.docs && data.docs.length){
-
-        title = data.docs[0].title || "";
-        
-        author = data.docs[0].author_name
-            ? data.docs[0].author_name.join(", ")
-            : "";
-
-} else {
-
-    alert("OpenLibrary returned no docs");
-
-}
-
-}
-catch(error){
-
-    alert("OpenLibrary error: " + error.name + " / " + error.message);
-
-    console.log(error);
-}
-        if(!title){
-            alert("NO TITLE AFTER OPENLIBRARY");
-            return;
-        }
-        result.innerHTML = `
-        <div class="book">
-
-            <b>${title}</b>
-            <br>
-            ${author}
-            <br>
-            ISBN: ${isbn}
-
-            <br><br>
-
-            <button onclick="addScannedBook(
-            '${title.replace(/'/g,"\\'")}',
-            '${author.replace(/'/g,"\\'")}'
-            )">
-
-            Add to Library
-
-            </button>
-
-        </div>
-        `;
-
-    }
-
-    catch(error){
-
-        result.innerHTML =
-        "Lookup error: " + error.message;
-
-        console.log(error);
-
-    }
-
-}
-
-function addScannedBook(title,author){
-
-    let exists = books.some(book =>
-        book[0].toLowerCase() === title.toLowerCase()
+  try {
+    const response = await fetch(
+      "https://openlibrary.org/search.json?isbn=" + encodeURIComponent(isbn)
     );
 
-    if(exists){
-        alert("This book is already in your library.");
-        return;
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    console.log("OpenLibrary response:", data);
+
+    if (!data.docs || data.docs.length === 0) {
+      resultEl.innerHTML = "No book found for ISBN " + isbn;
+      return;
     }
 
-    books.push(
-        [title,author]
-    );
+    const doc = data.docs[0];
+    const title = doc.title || "Unknown title";
+    const author = doc.author_name ? doc.author_name.join(", ") : "Unknown author";
 
+    // Escape for safe insertion into onclick
+    const safeTitle = title.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    const safeAuthor = author.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
-    localStorage.setItem(
-        "penguinLibraryBooks",
-        JSON.stringify(books)
-    );
-
-
-    alert(title+" added!");
-document.getElementById("scanResult").innerHTML = "";
-
-    render();
-
+    resultEl.innerHTML = `
+      <div class="book">
+        <b>${title}</b><br>
+        ${author}<br>
+        ISBN: ${isbn}<br><br>
+        <button onclick="addScannedBook('${safeTitle}', '${safeAuthor}')">
+          Add to Library
+        </button>
+      </div>`;
+  } catch (error) {
+    console.error(error);
+    resultEl.innerHTML = "Lookup error: " + error.message;
+  }
 }
 
-function deleteBook(index){
+function addScannedBook(title, author) {
+  const exists = books.some(
+    b => b[0].toLowerCase() === title.toLowerCase()
+  );
 
-    if(confirm("Remove this book from your library?")){
+  if (exists) {
+    alert("This book is already in your library.");
+    return;
+  }
 
-        books.splice(index,1);
+  books.push([title, author]);
+  localStorage.setItem("penguinLibraryBooks", JSON.stringify(books));
 
-        localStorage.setItem(
-            "penguinLibraryBooks",
-            JSON.stringify(books)
-        );
-
-        delete saved[index];
-
-        localStorage.setItem(
-            "penguinLibrary",
-            JSON.stringify(saved)
-        );
-
-        render();
-    }
-
+  alert(title + " added!");
+  document.getElementById("scanResult").innerHTML = "";
+  render();
 }
-function archiveBook(index){
 
-    if(confirm("Move this book to the archive?")){
-
-        archivedBooks.push(books[index]);
-
-        books.splice(index,1);
-
-        localStorage.setItem(
-            "penguinArchivedBooks",
-            JSON.stringify(archivedBooks)
-        );
-
-        localStorage.setItem(
-            "penguinLibraryBooks",
-            JSON.stringify(books)
-        );
-
-        render();
-
-    }
-
-}
+document.getElementById("search").addEventListener("input", render);
+render();
 </script>
-
 </body>
-
 </html>
