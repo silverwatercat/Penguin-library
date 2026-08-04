@@ -114,9 +114,29 @@ video{
         placeholder="Search title or author">
 
     <button class="scan-btn" onclick="startScanner()" title="Scan Book">
-        📷
-    </button>
+    <svg xmlns="http://www.w3.org/2000/svg"
+     width="20"
+     height="20"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="white"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round">
 
+    <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+    <path d="M21 7V5a2 2 0 0 0-2-2h-2"/>
+    <path d="M3 17v2a2 2 0 0 0 2 2h2"/>
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+
+    <line x1="8" y1="8" x2="8" y2="16"/>
+    <line x1="11" y1="8" x2="11" y2="16"/>
+    <line x1="14" y1="8" x2="14" y2="16"/>
+    <line x1="17" y1="8" x2="17" y2="16"/>
+
+</svg>
+
+</button>
 </div>
 <button onclick="showMainLibrary()">📚 Library</button>
 <button onclick="showArchive()">📦 Archive</button>
