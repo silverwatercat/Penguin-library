@@ -487,53 +487,7 @@ catch(error){
 
 }
 
-        // Try Google Books if OpenLibrary failed
-        if(!title){
-
-            console.log("Trying Google Books...");
-            result.innerHTML = "Trying Google Books...";
-            console.log("ISBN sent to Google;", isbn);
-
-           let controller = new AbortController();
-
-let timeout = setTimeout(() => {
-    controller.abort();
-}, 5000);
-
-let googleResponse = await fetch(
-    "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn,
-    { signal: controller.signal }
-);
-
-clearTimeout(timeout);
-
-let googleData = await googleResponse.json();
-
-            console.log("Google Books:", googleData);
-
-            if(googleData.totalItems > 0){
-
-                let info = googleData.items[0].volumeInfo;
-
-                title = info.title || "";
-
-                author = info.authors
-                    ? info.authors.join(", ")
-                    : "";
-
-            }
-
-        }
-
-
-        if(!title){
-    debug("NO TITLE FOUND");
-    debug("ISBN WAS: " + isbn);
-    return;
-}
-
-
-        result.innerHTML = `
+     result.innerHTML = `
         <div class="book">
 
             <b>${title}</b>
