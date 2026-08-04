@@ -354,8 +354,8 @@ if(result){
 
     let isbn = cleanISBN(result.text);
 
-if(isbn.length === 12 && isbn.startsWith("0")){
-    isbn = "978" + isbn.substring(1);
+if(isbn.length === 12){
+    isbn = "978" + isbn;
 }
 
 console.log("RAW BARCODE:", result.text);
@@ -366,6 +366,8 @@ console.log("CLEAN ISBN:", isbn);
               
 
 stopScanner();
+
+console.log("FINAL ISBN SENT:", isbn, "length:", isbn.length);
 
 lookupISBNNumber(isbn);
                 }
