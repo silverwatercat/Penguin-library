@@ -455,6 +455,7 @@ let response = await fetch(
 clearTimeout(timeout);
 
     let data = await response.json();
+    alert(data.docs[0]?.title || "NO TITLE FROM OPENLIBRARY");
 
     console.log("OpenLibrary:", data);
 
