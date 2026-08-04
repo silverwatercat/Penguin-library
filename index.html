@@ -317,8 +317,20 @@ function cleanISBN(code){
 
     let isbn = code.replace(/\D/g,'');
 
-    if(isbn.length > 13){
-        isbn = isbn.slice(-13);
+    // ISBN-13
+    if(isbn.length === 13){
+        return isbn;
+    }
+
+    // ISBN-10 convert to ISBN-13
+    if(isbn.length === 10){
+        return "978" + isbn.substring(0,9);
+    }
+
+    // Some scanners return UPC-A (12 digits)
+    // Book UPCs usually start with 978 or 979 after conversion
+    if(isbn.length === 12){
+        return "978" + isbn.substring(0,11);
     }
 
     return isbn;
@@ -353,24 +365,20 @@ if(result){
 
     let isbn = cleanISBN(result.text);
 
-if(isbn.length === 12){
-    isbn = "978" + isbn.substring(1);
-}
-
-console.log("RAW BARCODE:", result.text);
-console.log("CLEAN ISBN:", isbn);
+    console.log("RAW BARCODE:", result.text);
+    console.log("CLEAN ISBN:", isbn);
 
     document.getElementById("scanResult").innerHTML =
     "Scanned: " + result.text + "<br>Clean ISBN: " + isbn;
-              
 
-stopScanner();
+    stopScanner();
 
-console.log("FINAL ISBN SENT:", isbn, "length:", isbn.length);
-alert("Scanner sent: " + isbn);
+    console.log("FINAL ISBN SENT:", isbn, "length:", isbn.length);
 
-lookupISBNNumber(isbn);
-                }
+    alert("Scanner sent: " + isbn);
+
+    lookupISBNNumber(isbn);
+}
 
             }
         );
