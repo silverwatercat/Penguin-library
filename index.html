@@ -534,6 +534,14 @@ let googleData = await googleResponse.json();
 
 function addScannedBook(title,author){
 
+    let exists = books.some(book =>
+        book[0].toLowerCase() === title.toLowerCase()
+    );
+
+    if(exists){
+        alert("This book is already in your library.");
+        return;
+    }
 
     books.push(
         [title,author]
