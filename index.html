@@ -356,21 +356,19 @@ height: { ideal: 1080 }
             (result, error) => {
 if(result){
 
-let raw = result.text.toString().replace(/\D/g,'');
+let raw = result.text.toString();
 
 console.log("RAW BARCODE:", raw);
 
-let isbn = raw;
+let isbn = cleanISBN(raw);
 
-if(raw.length === 12 && raw.startsWith("0")){
-    isbn = raw.substring(1);
-}
-
-console.log("ISBN SENT:", isbn);
+console.log("CLEAN ISBN:", isbn);
 
 alert("ISBN SENT: " + isbn);
 
 stopScanner();
+
+lookupISBNNumber(isbn);
 
 async function lookupISBNNumber(isbn){
 
