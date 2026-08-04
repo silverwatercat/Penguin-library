@@ -69,35 +69,33 @@ video{
 
 .search{
     width:100%;
-    height:48px;
-    padding:0 55px 0 15px;
-    border:1px solid #999;
-    border-radius:24px;
+    height:46px;
+    padding:0 46px 0 14px;
+    border:1px solid #bbb;
+    border-radius:23px;
     font-size:16px;
     box-sizing:border-box;
 }
 
-.scan-btn{
+.scan-icon{
     position:absolute;
+    right:14px;
     top:50%;
-    right:6px;
     transform:translateY(-50%);
-    width:38px;
-    height:38px;
-    border:none;
-    border-radius:50%;
-    background:#333;
-    color:white;
     display:flex;
     align-items:center;
     justify-content:center;
     cursor:pointer;
-    padding:0;
+    color:#666;
+    transition:.2s;
 }
 
-.scan-btn:hover{
-    background:#555;
+.scan-icon:hover{
+    color:#111;
 }   
+.scan-icon svg{
+    display:block;
+}
 </style>
 </head>
 <body>
@@ -113,31 +111,34 @@ video{
         class="search"
         placeholder="Search title or author">
 
-    <button class="scan-btn" onclick="startScanner()" title="Scan Book">
-    <svg xmlns="http://www.w3.org/2000/svg"
-     width="20"
-     height="20"
-     viewBox="0 0 24 24"
-     fill="none"
-     stroke="white"
-     stroke-width="2"
-     stroke-linecap="round"
-     stroke-linejoin="round">
+    <span class="scan-icon" onclick="startScanner()" title="Scan Book">
 
-    <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
-    <path d="M21 7V5a2 2 0 0 0-2-2h-2"/>
-    <path d="M3 17v2a2 2 0 0 0 2 2h2"/>
-    <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="18"
+             height="18"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="#666"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
 
-    <line x1="8" y1="8" x2="8" y2="16"/>
-    <line x1="11" y1="8" x2="11" y2="16"/>
-    <line x1="14" y1="8" x2="14" y2="16"/>
-    <line x1="17" y1="8" x2="17" y2="16"/>
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+            <path d="M21 7V5a2 2 0 0 0-2-2h-2"/>
+            <path d="M3 17v2a2 2 0 0 0 2 2h2"/>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
 
-</svg>
+            <line x1="8" y1="8" x2="8" y2="16"/>
+            <line x1="11" y1="8" x2="11" y2="16"/>
+            <line x1="14" y1="8" x2="14" y2="16"/>
+            <line x1="17" y1="8" x2="17" y2="16"/>
 
-</button>
+        </svg>
+
+    </span>
+
 </div>
+    
 <button onclick="showMainLibrary()">📚 Library</button>
 <button onclick="showArchive()">📦 Archive</button>
 
