@@ -263,12 +263,11 @@ function render() {
   const area = document.getElementById("books");
   area.innerHTML = "";
 
-  let owned = 0, read = 0, wishlist = 0;
+  let owned = 0, read = 0;
 
   books.forEach((book, index) => {
     if (saved[index]?.owned) owned++;
     if (saved[index]?.read) read++;
-    if (saved[index]?.wishlist) wishlist++;
 
     const text = (book[0] + " " + book[1]).toLowerCase();
     if (!text.includes(search)) return;
@@ -289,13 +288,6 @@ function render() {
                  onchange="updateBook(${index},'read')">
           I have read this
         </label>
-
-        <label>
-          <input type="checkbox" ${saved[index]?.wishlist ? "checked" : ""}
-                 onchange="updateBook(${index},'wishlist')">
-          Wishlist
-        </label>
-
         <label>
           <input type="checkbox" onchange="archiveBook(${index})">
           Archive this book
@@ -304,7 +296,7 @@ function render() {
   });
 
   document.getElementById("stats").innerHTML =
-    `Owned: ${owned} | Read: ${read} | Wishlist: ${wishlist} | Total: ${books.length}`;
+    `Owned: ${owned} | Read: ${read} | Total: ${books.length}`;
 }
 
 function updateBook(index, type) {
