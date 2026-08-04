@@ -327,13 +327,6 @@ function cleanISBN(code){
         return "978" + isbn.substring(0,9);
     }
 
-    // UPC-A book barcode
-    if(isbn.length === 12 && (isbn.startsWith("0") || isbn.startsWith("1") || isbn.startsWith("2") || isbn.startsWith("3") || isbn.startsWith("4") || isbn.startsWith("5") || isbn.startsWith("6") || isbn.startsWith("7") || isbn.startsWith("8") || isbn.startsWith("9"))){
-
-        // remove UPC check digit and add 978 prefix
-        return "978" + isbn.substring(0,9);
-    }
-
     return isbn;
 
 }
