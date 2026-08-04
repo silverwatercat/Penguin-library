@@ -349,12 +349,21 @@ height: { ideal: 1080 }
             video,
             (result, error) => {
 if(result){
-console.log("RAW BARCODE:", JSON.stringify(result.text));
 
-alert("RAW BARCODE: " + JSON.stringify(result.text));
+let raw = result.text;
+
+console.log("RAW BARCODE:", raw);
+
+let isbn = "978" + raw;
+
+console.log("ISBN CREATED:", isbn);
+
+alert("ISBN SENT: " + isbn);
 
 stopScanner();
-   
+
+lookupISBNNumber(isbn);
+
 }
 
             }
