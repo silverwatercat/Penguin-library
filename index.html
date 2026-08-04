@@ -356,9 +356,17 @@ height: { ideal: 1080 }
             (result, error) => {
 if(result){
 
-let isbn = result.text.toString().replace(/\D/g,'');
+let raw = result.text.toString().replace(/\D/g,'');
 
-console.log("RAW BARCODE:", isbn);
+console.log("RAW BARCODE:", raw);
+
+let isbn = raw;
+
+if(raw.length === 12 && raw.startsWith("0")){
+    isbn = raw.substring(1);
+}
+
+console.log("ISBN SENT:", isbn);
 
 alert("ISBN SENT: " + isbn);
 
