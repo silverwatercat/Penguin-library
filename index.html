@@ -397,27 +397,10 @@ async function lookupISBNNumber(isbn){
         let author = "";
         let book = null;
 
-     // Try OpenLibrary first
-try {
+    if(!title){
 
-    let controller = new AbortController();
-
-    let timeout = setTimeout(() => {
-        controller.abort();
-    }, 5000);
-
-    let response = await fetch(
-        "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data",
-        { signal: controller.signal }
-    );
-
-    clearTimeout(timeout);
-
-    let data = await response.json();
-
-    console.log("OpenLibrary:", data);
-
-    book = data["ISBN:" + isbn];
+    console.log("Trying Google Books...");
+    result.innerHTML = "Trying Google Books...";
 
     if(book){
 
