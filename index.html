@@ -395,48 +395,42 @@ async function lookupISBNNumber(isbn){
 
         let title = "";
         let author = "";
-        let book = null;
 
-    if(!title){
+        // Try OpenLibrary first
+        try {
 
-    console.log("Trying Google Books...");
-    result.innerHTML = "Trying Google Books...";
+            let response = await fetch(
+                "https://openlibrary.org/search.json?isbn=" + isbn
+            );
 
-    if(book){
+            let data = await response.json();
 
-        title = book.title;
+            console.log("OpenLibrary:", data);
 
-        if(book.authors && book.authors.length){
-            author = book.authors[0].name || "";
-        }
+            if(data.docs && data.docs.length){
 
-    }
+                title = data.docs[0].title || "";
 
-}
-catch(error){
-
-    console.log("OpenLibrary failed, trying Google Books");
-
-}
-
-        if(book){
-
-            title = book.title;
-
-            if(book.authors && book.authors.length){
-
-                author = book.authors[0].name || "";
+                if(data.docs[0].author_name){
+                    author = data.docs[0].author_name.join(", ");
+                }
 
             }
 
         }
+        catch(error){
+
+            console.log("OpenLibrary failed");
+
+        }
 
 
-        // If OpenLibrary failed, try Google Books
-      if(!title){
+        // Try Google Books if OpenLibrary failed
+        if(!title){
 
-    console.log("Trying Google Books...");
-    result.innerHTML = "Trying Google Books...";
+            console.log("Trying Google Books...");
+            result.innerHTML = "Trying Google Books...";
+
             let googleResponse = await fetch(
                 "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
             );
@@ -445,14 +439,13 @@ catch(error){
 
             console.log("Google Books:", googleData);
 
-
             if(googleData.totalItems > 0){
 
                 let info = googleData.items[0].volumeInfo;
 
                 title = info.title || "";
 
-                author = info.authors 
+                author = info.authors
                     ? info.authors.join(", ")
                     : "";
 
@@ -490,7 +483,6 @@ catch(error){
 
         </div>
         `;
-
 
     }
 
