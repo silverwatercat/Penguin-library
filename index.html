@@ -105,7 +105,7 @@ placeholder="Search title or author">
 
 <script>
 
-alert("VERSION TEST c");
+alert("VERSION TEST ff");
 
 function debug(message){
     console.log(message);
@@ -445,18 +445,9 @@ async function lookupISBNNumber(isbn){
 
     try {
 
-    let controller = new AbortController();
-
-    let timeout = setTimeout(() => {
-        controller.abort();
-    }, 15000);
-
-    let response = await fetch(
-        "https://openlibrary.org/search.json?isbn=" + isbn,
-        { signal: controller.signal }
-    );
-
-    clearTimeout(timeout);
+   let response = await fetch(
+    "https://openlibrary.org/search.json?isbn=" + isbn
+);
 
     let data = await response.json();
         alert(JSON.stringify(data));
