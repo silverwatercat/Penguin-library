@@ -373,7 +373,9 @@ lookupISBNNumber(isbn);
 }
 });
 }
-
+catch(error){
+    console.log(error);
+}
 function stopScanner(){
 
     if(codeReader){
