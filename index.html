@@ -105,7 +105,7 @@ placeholder="Search title or author">
 
 <script>
 
-alert("VERSION TEST 155");
+alert("VERSION TEST a");
 
 function debug(message){
     console.log(message);
@@ -474,8 +474,9 @@ alert("TITLE=" + title + " AUTHOR=" + author);
 }
 catch(error){
 
-    alert("OPENLIBRARY ERROR: " + error.message);
+    alert("OpenLibrary error: " + error.name + " / " + error.message);
 
+    console.log(error);
 }
         if(!title){
             alert("NO TITLE AFTER OPENLIBRARY");
