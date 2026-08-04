@@ -395,6 +395,7 @@ async function lookupISBNNumber(isbn){
 
         let title = "";
         let author = "";
+        let book = null;
 
      // Try OpenLibrary first
 try {
@@ -416,7 +417,7 @@ try {
 
     console.log("OpenLibrary:", data);
 
-    let book = data["ISBN:" + isbn];
+    book = data["ISBN:" + isbn];
 
     if(book){
 
