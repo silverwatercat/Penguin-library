@@ -519,10 +519,10 @@ let googleData = await googleResponse.json();
 
 
         if(!title){
-
-            throw new Error("Book not found");
-
-        }
+    debug("NO TITLE FOUND");
+    debug("ISBN WAS: " + isbn);
+    return;
+}
 
 
         result.innerHTML = `
