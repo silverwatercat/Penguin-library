@@ -412,9 +412,18 @@ async function lookupISBNNumber(isbn){
 // Try OpenLibrary first
 try {
 
-    let response = await fetch(
-        "https://openlibrary.org/search.json?isbn=" + isbn
-    );
+   let controller = new AbortController();
+
+let timeout = setTimeout(() => {
+    controller.abort();
+}, 5000);
+
+let response = await fetch(
+    "https://openlibrary.org/search.json?isbn=" + isbn,
+    { signal: controller.signal }
+);
+
+clearTimeout(timeout);
 
     let data = await response.json();
 
