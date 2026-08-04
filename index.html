@@ -349,22 +349,12 @@ height: { ideal: 1080 }
             video,
             (result, error) => {
 if(result){
+console.log("RAW BARCODE:", JSON.stringify(result.text));
 
-    let isbn = cleanISBN(result.text);
+alert("RAW BARCODE: " + JSON.stringify(result.text));
 
-    console.log("RAW BARCODE:", result.text);
-    console.log("CLEAN ISBN:", isbn);
-
-    document.getElementById("scanResult").innerHTML =
-    "Scanned: " + result.text + "<br>Clean ISBN: " + isbn;
-
-    stopScanner();
-
-    console.log("FINAL ISBN SENT:", isbn, "length:", isbn.length);
-
-    alert("Scanner sent: " + isbn);
-
-    lookupISBNNumber(isbn);
+stopScanner();
+   
 }
 
             }
