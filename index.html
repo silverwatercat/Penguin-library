@@ -408,36 +408,24 @@ async function lookupISBNNumber(isbn){
         let title = "";
         let author = "";
 
-     // Try OpenLibrary first
+    
+// Try OpenLibrary first
 try {
 
-    let controller = new AbortController();
-
-    let timeout = setTimeout(() => {
-        controller.abort();
-    }, 5000);
-
     let response = await fetch(
-        "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data",
-        { signal: controller.signal }
+        "https://openlibrary.org/search.json?isbn=" + isbn
     );
-
-    clearTimeout(timeout);
 
     let data = await response.json();
 
     console.log("OpenLibrary:", data);
 
-    let key = "ISBN:" + isbn;
+    if(data.docs && data.docs.length){
 
-    if(data[key]){
+        title = data.docs[0].title || "";
 
-        title = data[key].title || "";
-
-        if(data[key].authors && data[key].authors.length){
-
-            author = data[key].authors[0].name || "";
-
+        if(data.docs[0].author_name){
+            author = data.docs[0].author_name.join(", ");
         }
 
     }
@@ -448,7 +436,6 @@ catch(error){
     console.log("OpenLibrary failed", error);
 
 }
-
 
         // Try Google Books if OpenLibrary failed
         if(!title){
