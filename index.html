@@ -456,7 +456,7 @@ clearTimeout(timeout);
 
     let data = await response.json();
 
-    debug("OpenLibrary: " + JSON.stringify(data));
+    console.log("OpenLibrary:", data);
 
     if(data.docs && data.docs.length){
 
@@ -497,7 +497,7 @@ clearTimeout(timeout);
 
 let googleData = await googleResponse.json();
 
-            debug("Google Books: " + JSON.stringify(googleData));
+            console.log("Google Books:", googleData);
 
             if(googleData.totalItems > 0){
 
