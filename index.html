@@ -402,72 +402,34 @@ async function lookupISBNNumber(isbn){
 
     let result = document.getElementById("scanResult");
 
-    result.innerHTML = "Looking up ISBN: [" + isbn + "] length=" + isbn.length;
+    result.innerHTML = "Looking up ISBN: " + isbn;
 
     try {
 
-      console.log("LOOKING UP ISBN:", isbn);
+        console.log("LOOKING UP ISBN:", isbn);
 
-let response = await fetch(
-    "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data"
-);
-
-let data = await response.json();
-
-console.log("Exact ISBN lookup:", data);
-
-let book = data["ISBN:" + isbn];
-
-if(!book){
-
-    console.log("Trying OpenLibrary search...");
-
-    let searchResponse = await fetch(
-    "https://openlibrary.org/search.json?isbn=" + isbn
-);
-
-    let searchData = await searchResponse.json();
-
-    if(searchData.docs.length){
-
-        book = {
-            title: searchData.docs[0].title,
-            authors: searchData.docs[0].author_name 
-                ? searchData.docs[0].author_name.map(name => ({name:name}))
-                : []
-        };
-
-    } else {
-
-        throw new Error("Book not found");
-
-    }
-}
-
-      let title = book.title || "Unknown title";
-
-let author = "Unknown author";
-
-if(book.authors && book.authors.length){
-
-    if(book.authors[0].key){
-
-        let authorResponse = await fetch(
-            "https://openlibrary.org" + book.authors[0].key + ".json"
+        let response = await fetch(
+            "https://openlibrary.org/search.json?isbn=" + isbn
         );
 
-        let authorData = await authorResponse.json();
+        let data = await response.json();
 
-        author = authorData.name || author;
+        console.log("OpenLibrary result:", data);
 
-    } 
-    else if(book.authors[0].name){
+        if(!data.docs || data.docs.length === 0){
+            throw new Error("Book not found");
+        }
 
-        author = book.authors[0].name;
+        let book = data.docs[0];
 
-    }
+        let title = book.title || "Unknown title";
 
-}
+        let author = "Unknown author";
+
+        if(book.author_name && book.author_name.length){
+            author = book.author_name[0];
+        }
+
 
         result.innerHTML = `
         <div class="book">
@@ -491,6 +453,8 @@ if(book.authors && book.authors.length){
     }
 
     catch(error){
+
+        console.error(error);
 
         result.innerHTML =
         "Lookup error: " + error.message;
