@@ -373,7 +373,10 @@ if(result){
 
     let raw = result.text;
 
-    let isbn = cleanISBN(raw);
+let isbn = cleanISBN(raw);
+
+console.log("Raw barcode:", raw);
+console.log("Clean ISBN:", isbn);
 
     stopScanner();
 
